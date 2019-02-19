@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: log4j-1.2.17.jar protobuf-java-2.4.1.jar commons-cli-1.2.j
+ ar slf4j-log4j12-1.7.21.jar netty-all-4.1.24.Final.jar slf4j-api-1.7.
+ 21.jar
+Main-Class: ConsumerBatchTest
+

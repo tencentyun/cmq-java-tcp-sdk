@@ -1,0 +1,552 @@
+import "common.proto";
+
+option java_package = "com.qcloud.cmq.client.protocol";
+
+enum CMQ_CMD
+{
+	//queue 模式
+	CMQ_SEND_MSG                                = 1005; //生产消息
+	CMQ_BATCH_SEND_MSG                          = 1006; //批量生产消息
+	CMQ_PULL_MSG                                = 1007; //消费消息
+	CMQ_BATCH_PULL_MSG                          = 1008; //批量消费消息
+	CMQ_DELETE_MSG                              = 1009; //删除消息
+	CMQ_BATCH_DELETE_MSG                        = 1010; //批量删除消息
+
+	//topic模式
+	CMQ_PUBLISH_MSG                             = 1011; //发布消息
+	CMQ_BATCH_PUBLISH_MSG                       = 1012; //批量发布消息
+	CMQ_DELIVER_MSG                             = 1013; //投递消息
+
+	//CMQ TCP SDK
+	CMQ_TCP_AUTH                                = 1020; //tcp鉴权(签名)
+	CMQ_TCP_SEND_MSG                            = 1021; //生产消息
+	CMQ_TCP_BATCH_SEND_MSG                      = 1022; //批量生产消息
+	CMQ_TCP_PULL_MSG                            = 1023; //消费消息
+	CMQ_TCP_BATCH_PULL_MSG                      = 1024; //批量消费消息
+	CMQ_TCP_DELETE_MSG                          = 1025; //删除消息
+	CMQ_TCP_BATCH_DELETE_MSG                    = 1026; //批量删除消息
+	CMQ_TCP_PUBLISH_MSG                         = 1027; //发布消息
+	CMQ_TCP_BATCH_PUBLISH_MSG                   = 1028; //批量发布消息
+
+	//事务消息
+	CMQ_TCP_HEARTBEAT                           = 1040; //消息链路心跳(回复)
+	CMQ_TRANSACTION_CONFIRM                     = 1041; //事务消息确认(回复)
+	CMQ_TRANSACTION_QUERY                       = 1042; //服务器主动回查事务
+
+	//RockMQ版本	
+	CMQ_ROCKET_GET_OSS_IP                       = 1100; //获取oss地址
+	CMQ_ROCKET_UPDATE_PUB_ROUTE_INFO            = 1101; //获取生产路由
+	CMQ_ROCKET_UPDATE_SUB_ROUTE_INFO            = 1102; //获取消费路由
+
+	//RocketMQ SDK<->ACCESS
+	CMQ_ROCKET_AUTH                             = 1200;
+	CMQ_ROCKET_AUTH_REPLY                       = 1201;
+
+	CMQ_ROCKET_LOCK_QUEUE                       = 1202;
+	CMQ_ROCKET_LOCK_QUEUE_REPLY                 = 1203;
+	CMQ_ROCKET_UNLOCK_QUEUE                     = 1204;
+
+	CMQ_ROCKET_GET_CIDS                         = 1205;
+	CMQ_ROCKET_GET_CIDS_REPLY                   = 1206;
+
+	CMQ_ROCKET_FETCH_OFFSET                     = 1207;
+	CMQ_ROCKET_GET_MIN_OFFSET                   = 1208;
+	CMQ_ROCKET_GET_MAX_OFFSET                   = 1209;
+	CMQ_ROCKET_SEARCH_OFFSET_BY_TIME            = 1210;
+	CMQ_ROCKET_OFFSET_REPLY                     = 1211;
+	CMQ_ROCKET_UPDATE_OFFSET                    = 1212;
+	CMQ_ROCKET_RESET_OFFSET                     = 1213;
+
+	CMQ_ROCKET_PUB_MSG                          = 1214;
+	CMQ_ROCKET_PUB_MSG_REPLY                    = 1215;
+	CMQ_ROCKET_PULL_MSG                         = 1216;
+	CMQ_ROCKET_PULL_MSG_REPLY                   = 1217;
+	CMQ_ROCKET_SEND_BACK                        = 1218;
+
+	CMQ_ROCKET_HEART_BEAT                       = 1219;
+	CMQ_ROCKET_UNREGISTER                       = 1220;
+
+	CMQ_ROCKET_NOTIFY_IDS_CHANGE                = 1221;
+}
+
+//-------------------------------------------------------------------------
+message CMQProto
+{
+	//-------head--------
+	required int64	seqno											=1;// 客户端用来匹配请求回复。尽量不重复，自增++即可，server段回包时读取请求包中的seqno填充。
+	required int32	cmd												=2;// 命令字，对应CMQ_CMD,用来区分协议内容
+	optional int32	result											=3;// 0：成功，其他表示失败，具体失败内容填充在下面error中，对应文档中的code
+	optional string	error											=4;// 和result 配合使用,对应文档中的message
+	optional string proto_type_name                                 =5;//协议名字，
+	optional int32  is_oneway                                       =9;
+	optional uint64 request_id                                      =10;//主要用来跟踪定位问题,服务器生成，对应文档中的requestId。
+
+	//-------body---------
+	optional cmq_send_msg       		send_msg            	    = 20;   //生产消息
+	optional cmq_batch_send_msg  		batch_send_msg              = 21;   //批量生产消息
+	optional cmq_pull_msg_req           pull_msg            	    = 22;   //拉取消息
+	optional cmq_batch_pull_msg_req     batch_pull_msg              = 23;   //批量拉取消息
+	optional cmq_delete_msg      		delete_msg            	    = 24;   //删除消息
+	optional cmq_batch_delete_msg  		batch_delete_msg            = 25;   //批量删除消息
+	optional cmq_pull_msg_rsp           pull_rsp                    = 26;   //拉取消息应答
+	optional cmq_batch_pull_msg_rsp     batch_pull_rsp              = 27;   //批量拉取消息应答
+	repeated cmq_msg_delete_result      del_result                  = 28;   //删除消息结果,只存出错的消息信息,成功删除的不存储
+	repeated uint64                     msgids                      = 29;   //发送消息时应答的msgid
+
+	optional cmq_publish_msg            publish_msg                 = 40;  //发布消息
+	optional cmq_batch_publish_msg      batch_publish_msg           = 41;  //批量发布消息
+	optional cmq_deliver_msg            deliver_msg                 = 42;  //推送消息
+	optional cmq_deliver_result         deliver_result              = 43;  //推送结果
+
+	optional cmq_rocket_get_pub_route_info  pub_route_info            = 101;
+	optional cmq_rocket_get_sub_route_info  sub_route_info            = 102;
+
+	optional cmq_rocket_oss_ip_result         oss_ip_result           = 120;
+	optional cmq_rocket_pub_route_info_result pub_route_info_result   = 121;
+	optional cmq_rocket_sub_route_info_result sub_route_info_result   = 122;
+
+	optional cmq_rocket_auth                rocket_auth             = 130;
+	optional cmq_rocket_auth_reply          rocket_auth_reply       = 131;
+
+	optional cmq_rocket_lock_queue          rocket_lock_queue         = 132;
+	optional cmq_rocket_lock_queue_reply    rocket_lock_queue_reply   = 133;
+	optional cmq_rocket_unlock_queue        rocket_unlock_queue       = 134;
+
+	optional cmq_rocket_get_cids            rocket_get_cids           = 135;
+	optional cmq_rocket_get_cids_reply      rocket_get_cids_reply     = 136;
+
+	optional cmq_rocket_fetch_offset        rocket_fetch_offset       = 137;
+	optional cmq_rocket_offset_reply        rocket_offset_reply       = 138;
+	optional cmq_rocket_update_offset       rocket_update_offset      = 139;
+
+	optional cmq_rocket_pub_msg             rocket_pub_msg            = 140;
+	optional cmq_rocket_pub_msg_reply       rocket_pub_msg_reply      = 141;
+	optional cmq_rocket_pull_msg            rocket_pull_msg           = 142;
+	optional cmq_rocket_pull_msg_reply      rocket_pull_msg_reply     = 143;
+	optional cmq_rocket_send_back           rocket_send_back          = 144;
+
+	optional cmq_rocket_heart_beat          rocket_heart_beat         = 145;
+	optional cmq_rocket_unregister          rocket_unregister         = 146;
+	optional cmq_rocket_notify_ids_change   rocket_notify_ids_change  = 147;
+	optional cmq_rocket_reset_offset        rocket_reset_offset       = 148;
+
+	//CMQ TCP SDK
+	optional cmq_tcp_auth                   tcp_auth                  = 199;
+	optional cmq_tcp_send_msg               tcp_send_msg              = 200;   //生产消息
+	optional cmq_tcp_batch_send_msg         tcp_batch_send_msg        = 201;   //批量生产消息
+	optional cmq_tcp_pull_msg_req           tcp_pull_msg              = 202;   //拉取消息
+	optional cmq_tcp_batch_pull_msg_req     tcp_batch_pull_msg        = 204;   //批量拉取消息
+	optional cmq_tcp_delete_msg             tcp_delete_msg            = 206;   //删除消息
+	optional cmq_tcp_batch_delete_msg       tcp_batch_delete_msg      = 207;   //批量删除消息
+	optional cmq_tcp_publish_msg            tcp_publish_msg           = 208;   //发布消息
+	optional cmq_tcp_batch_publish_msg      tcp_batch_publish_msg     = 209;   //批量发布消息
+
+	//事务消息
+	optional cmq_transaction_confirm          transaction_confirm         = 221;
+	optional cmq_transaction_confirm_reply    transaction_confirm_reply   = 222;
+	optional cmq_transaction_query            transaction_query           = 223;
+
+}
+
+
+//发送消息
+message cmq_send_msg{
+	required  string queue_id =1; //队列ID
+	optional  bytes msgBody =2;   //消息正文，Base64编码
+	optional  uint32 delay_seconds = 3; //事务队列不支持延时消息，透传给broker鉴定
+	optional  int32 is_transaction = 4; // 1：发送事务消息
+	optional  int32 first_query_interval = 5; //第一次回查间隔
+}
+
+//批量发送消息
+message cmq_batch_send_msg{
+	required  string queue_id =1; //队列ID
+	repeated  bytes msgBody =2;   //消息正文，Base64编码
+	optional  uint32 delay_seconds = 3; //事务队列不支持延时消息，透传给broker鉴定
+	optional  int32 is_transaction = 4; // 1：发送事务消息
+	optional  int32 first_query_interval = 5; //第一次回查间隔
+}
+
+//消费拉取消息请求
+message cmq_pull_msg_req{
+	required  string queue_id =1; //队列ID
+	optional  int32 poll_wait_seconds =2; //本次请求最长等待时间（长轮询）
+	optional  uint32 visible_timeout  = 3;//本次拉取消息的可见性超时
+}
+//消费拉取消息响应包
+message cmq_pull_msg_rsp{
+	required  uint64 msg_id =1; //msg ID
+	optional  uint64 receipt_handle =3;//此条消息对应的消费句柄，用于删除
+	optional  bytes msg_body =4;//消息正文，Base64
+	optional  int64 enqueue_time =5;//消息发送到队列的时间
+	optional  int64 next_visible_time =6;//消息发送到队列的时间
+	optional  int64 first_dequeue_time =7;//消息第一次投递时间
+	optional  int64 dequeue_count =8;//总共被消费次数
+	optional  string original_queue_id = 9; //如果是死信消息,则该字段存储死信消息的来源queue
+	optional  uint64 original_pub_tm   = 10;//如果是死信消息,则该字段存储死信消息最初入队时间
+	optional  uint32 original_dequeue_cnt = 11;//如果是死信消息,则该字段存储在源队列中出对的次数
+
+}
+
+//消费批量拉取消息请求
+message cmq_batch_pull_msg_req{
+	required  string queue_id =1; //队列ID
+	required  int32  num_msg =2; //本次拉取多少条消息（取值范围1-16）
+	optional  int32  poll_wait_seconds =3;//本次请求最长等待时间（长轮询）
+	optional  uint32 visible_timeout  = 4;//本次拉取消息的可见性超时
+}
+
+//消费拉取消息响应包
+message cmq_batch_pull_msg_rsp{
+	repeated  cmq_pull_msg_rsp msg_list =1;//消息正文，Base64编码
+}
+
+//删除消息请求
+message cmq_delete_msg{
+	required  string queue_id =1; //队列ID
+	required  uint64 receipt_handle  =2; //删除消息句柄
+}
+
+//批量删除消息请求
+message cmq_batch_delete_msg{
+	required  string queue_id =1; //队列ID
+	repeated  uint64 receipt_handle_list  =2; //删除消息句柄
+}
+
+message cmq_msg_delete_result
+{
+	required uint64 receipt_handle     = 1;
+	required int32  err_code           = 2;
+	required string err_msg            = 3;
+}
+
+//topic模式
+
+//发布消息
+message cmq_publish_msg{
+	required string topic_id = 1; //主题ID
+	required bytes  msgBody  = 2; //消息正文，Base64编码
+	repeated string msgTags  = 3;
+	optional string routing_key = 4;
+}
+
+//批量发布消息
+message cmq_batch_publish_msg{
+	required string topic_id = 1; //主题ID
+	repeated bytes  msgBody  = 2; //消息正文，Base64编码
+	repeated string msgTags  = 3;
+	optional string routing_key = 4;
+}
+
+message cmq_deliver_msg {
+	required uint64 app_id = 1;
+	required string topic_id = 2;
+	required string topic_name = 3;
+	required string subscribe_id = 4;  //订阅ID
+	required string subscribe_name = 5;
+	required uint64 msgid   = 6;  //消息ID
+	required bytes  msgBody = 7;  //消息正文
+	repeated string msgTags = 8;
+	required int64  publish_time  = 9; //消息发布到Topic的时间
+	required int32  endpoint_type = 10;
+	required string endpoint_url  = 11;
+	required int32  notify_format = 12;
+	optional uint64 uin           = 13;
+}
+
+message cmq_deliver_result {
+	required string subscribe_id = 1; //订阅ID
+	required uint64 msgid    = 2; //消息ID
+	required int32  err_code = 3; //0: ok;  other: error
+	optional string err_msg  = 4;
+}
+
+
+message cmq_rocket_get_pub_route_info{
+	required uint64 app_id   = 1;
+	required string topic_name = 2;
+}
+
+message cmq_rocket_get_sub_route_info{
+	required uint64 app_id    = 1;
+	required string topic_name = 2;
+	required string group_name = 3;
+}
+
+message node_info
+{
+	required uint32   oss_ip = 1;
+	required uint32   oss_port = 2;
+}
+
+message cmq_rocket_oss_ip_result{
+	repeated node_info oss_ip  = 1;
+}
+
+message broker_info
+{
+	required string broker_name  = 1;
+	required uint32 broker_ip    = 2;
+	required uint32 broker_port  = 3;
+	required uint64 cluster_id   = 4;
+}
+
+message message_queue
+{
+	required string topic_name   = 1;
+	required string broker_name  = 2;
+	required int32  id           = 3;
+	required uint64 real_id      = 4;
+}
+
+message cmq_rocket_pub_route_info_result{
+	repeated broker_info  brokers = 1;
+	repeated message_queue queues = 2;
+}
+
+message cmq_rocket_sub_route_info_result{
+	repeated broker_info brokers = 1;
+	repeated message_queue queues = 2;
+}
+
+message cmq_rocket_auth
+{
+	required string secret_id             = 1;
+	required string signature             = 2;
+	required string client_id             = 3;
+	required string signature_method      = 4;
+}
+
+message cmq_rocket_auth_reply
+{
+	required uint64 appid                 = 1;
+}
+
+message cmq_rocket_lock_queue
+{
+	repeated uint64 queue_id              = 1;
+	required uint32 cluster_id            = 2;
+}
+
+message cmq_rocket_lock_queue_reply
+{
+	repeated uint64 queue_id              = 1;
+}
+
+message cmq_rocket_unlock_queue
+{
+	repeated uint64 queue_id              = 1;
+	required uint32 cluster_id            = 2;
+}
+
+message cmq_rocket_get_cids
+{
+	required uint32 cluster_id            = 1;
+	required string group_name            = 2;
+}
+
+message cmq_rocket_get_cids_reply
+{
+	repeated string client_id             = 1;
+}
+
+message cmq_rocket_fetch_offset
+{
+	required uint32 cluster_id            = 1;
+	optional uint64 topic_id              = 2;
+	optional uint64 queue_id              = 3;
+	optional int64  timestamp             = 4;
+}
+
+message cmq_rocket_offset_reply
+{
+	required int64 offset                 = 1;
+}
+
+message cmq_rocket_update_offset
+{
+	required uint32 cluster_id            = 1;
+	required uint64 queue_id              = 2;
+	required int64  offset                = 3;
+}
+
+message cmq_rocket_pub_msg
+{
+	required string group_name            = 1;
+	required uint64 topic_id              = 2;
+	required string born_host             = 3;
+	required int64  born_timestamp        = 4;
+	repeated properinfo properties        = 5;
+	required bytes  body                  = 6;
+	optional string tag                   = 7;
+	optional string key                   = 8;
+	optional int32  delay_level           = 9;
+	optional int32  max_reconsume_time    = 10;
+	optional int32  reconsume_time        = 11;
+}
+
+message cmq_rocket_pub_msg_reply
+{
+	required string  msg_id               = 1;
+	required string  topic_name           = 2;
+	required string  broker_name          = 3;
+	required int32   id                   = 4;
+	required uint64  topic_id             = 5;
+	required int64   queue_offset         = 6;
+	optional string  transaction_id       = 7;
+	optional string  offset_msgid         = 8;
+	optional string  region_id            = 9;
+}
+
+message cmq_rocket_pull_msg
+{
+	required string group_name            = 1;
+	required uint64 queue_id              = 2;
+	required int64  queue_offset          = 3;
+	optional string subscription          = 4;
+	optional int32	batch_num             = 5;
+	required int64  version               = 6;
+	optional int32  suspend_mills         = 7;
+}
+
+message cmq_rocket_pull_msg_reply
+{
+	optional int64   next_begin_offset    = 1;
+	optional int64   min_offset           = 2;
+	optional int64   max_offset           = 3;
+	repeated msg_ext msgs                 = 4;
+}
+
+message cmq_rocket_send_back
+{
+	required string group_name            = 1;
+	required int64  topic_id              = 2;
+	required int64  offset                = 3;
+	required int32  delay_level           = 4;
+	optional int32  max_reconsume_time    = 5;
+}
+
+message cmq_rocket_heart_beat
+{
+	required uint32 cluster_id            = 1;
+	required int32 client_version         = 2;
+	repeated producedata p_data           = 3;
+	repeated consumedata c_data           = 4;
+}
+
+message cmq_rocket_unregister
+{
+	required uint32 cluster_id            = 1;
+	optional string produce_group         = 2;
+	optional string consume_group         = 3;
+}
+
+message cmq_rocket_notify_ids_change
+{
+	required string group_name            = 1;
+}
+
+message cmq_rocket_reset_offset
+{
+	required string group_name            = 1;
+	required string topic_name            = 2;
+	repeated offsettable table            = 3;
+}
+
+//鉴权消息
+message cmq_tcp_auth
+{
+	required  string secret_id             = 1;
+	required  string signature             = 2;
+	required  string client_id             = 3;
+	required  string signature_method      = 4;
+}
+
+//发送消息
+message cmq_tcp_send_msg{
+	required  string queue_name            = 1;   //队列名
+	optional  bytes msgBody                = 2;   //消息正文，Base64编码
+	optional  uint32 delay_seconds         = 3;   //事务队列不支持延时消息，透传给broker鉴定
+	optional  int32 is_transaction         = 4;   // 1：发送事务消息
+	optional  int32 first_query_interval   = 5;   //第一次回查间隔
+}
+
+//批量发送消息
+message cmq_tcp_batch_send_msg{
+	required  string queue_name            = 1;   //队列名
+	repeated  bytes msgBody                = 2;   //消息正文，Base64编码
+	optional  uint32 delay_seconds         = 3;   //事务队列不支持延时消息，透传给broker鉴定
+	optional  int32 is_transaction         = 4;   // 1：发送事务消息
+	optional  int32 first_query_interval   = 5;   //第一次回查间隔
+}
+
+//消费拉取消息请求
+message cmq_tcp_pull_msg_req{
+	required  string queue_name           = 1;   //队列名
+	optional  int32 poll_wait_seconds     = 2;   //本次请求最长等待时间（长轮询）
+	optional  uint32 visible_timeout      = 3;   //本次拉取消息的可见性超时
+}
+
+//消费批量拉取消息请求
+message cmq_tcp_batch_pull_msg_req{
+	required  string queue_name           = 1;   //队列名
+	required  int32  num_msg              = 2;   //本次拉取多少条消息（取值范围1-16）
+	optional  int32  poll_wait_seconds    = 3;   //本次请求最长等待时间（长轮询）
+	optional  uint32 visible_timeout      = 4;   //本次拉取消息的可见性超时
+}
+
+//删除消息请求
+message cmq_tcp_delete_msg{
+	required  string queue_name           = 1;   //队列名
+	required  uint64 receipt_handle       = 2;   //删除消息句柄
+}
+
+//批量删除消息请求
+message cmq_tcp_batch_delete_msg{
+	required  string queue_name           = 1;   //队列名
+	repeated  uint64 receipt_handle_list  = 2;   //删除消息句柄
+}
+
+//发布消息
+message cmq_tcp_publish_msg{
+	required  string topic_name           = 1;   //主题名
+	required  bytes  msgBody              = 2;   //消息正文，Base64编码
+	repeated  string msgTags              = 3;
+	optional  string routing_key          = 4;
+}
+
+//批量发布消息
+message cmq_tcp_batch_publish_msg{
+	required string topic_name            = 1;   //主题名
+	repeated bytes  msgBody               = 2;   //消息正文，Base64编码
+	repeated string msgTags               = 3;
+	optional string routing_key           = 4;
+}
+
+message cmq_transaction_confirm_item {
+	required uint64 msg_id                = 1;
+	required int32  state                 = 2;  // 1: commit  2: rollback
+}
+
+message cmq_transaction_confirm {
+	required string queue_name                        = 1;
+	repeated cmq_transaction_confirm_item item        = 2;
+}
+
+message cmq_transaction_confirm_reply_item {
+	required uint64 msg_id                = 1;
+	required int32  state                 = 2;  // 1: commit  2: rollback  3: unknown
+	optional int32  err_code              = 3;  // 当state=3时，错误码
+	optional string err_msg               = 4;  // 当state=3时，错误原因
+}
+
+message cmq_transaction_confirm_reply{
+	required string queue_name                        = 1;
+	repeated cmq_transaction_confirm_reply_item item  = 2;  // 确认和回复一一对应
+}
+
+message cmq_transaction_query{
+	required string queue_name            = 1;
+	required uint64 msg_id                = 2;
+}
+

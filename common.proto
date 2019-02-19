@@ -1,0 +1,17 @@
+
+message properinfo{
+  required  uint64 msg_id =1; //msg ID
+}
+
+message msg_ext{
+  required  uint64 msg_id =1; //msg ID
+}
+message producedata{
+  required  uint64 msg_id =1; //msg ID
+}
+message consumedata{
+  required  uint64 msg_id =1; //msg ID
+}
+message offsettable{
+  required  uint64 msg_id =1; //msg ID
+}
