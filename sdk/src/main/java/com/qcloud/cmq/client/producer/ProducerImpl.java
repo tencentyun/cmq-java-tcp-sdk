@@ -27,7 +27,7 @@ public class ProducerImpl {
         this.producer = producer;
     }
 
-    void start() throws MQClientException {
+    synchronized protected void start() throws MQClientException {
         switch (this.serviceState) {
             case CREATE_JUST:
                 this.serviceState = ServiceState.START_FAILED;
@@ -47,7 +47,7 @@ public class ProducerImpl {
         }
     }
 
-    void shutdown() {
+    synchronized protected void shutdown() {
         switch (this.serviceState) {
             case CREATE_JUST:
                 break;

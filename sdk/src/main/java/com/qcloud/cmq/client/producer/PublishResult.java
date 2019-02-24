@@ -14,6 +14,22 @@ public class PublishResult {
         this.errorMsg = errorMsg;
     }
 
+    public int getReturnCode() {
+        return returnCode;
+    }
+
+    public long getMsgId() {
+        return msgId;
+    }
+
+    public long getRequestId() {
+        return requestId;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
     public String toString() {
         return "[returnCode=" + returnCode + ", msgId=" + msgId + ", requestId=" + requestId+ ", errorMsg=" + errorMsg +"]";
     }

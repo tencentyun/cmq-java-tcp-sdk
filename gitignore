@@ -1,6 +1,6 @@
 # Lines that start with '#' are comments.
 # IntelliJ IDEA Project files
-.idea
+.idea/
 *.iml
 *.ipr
 *.iws

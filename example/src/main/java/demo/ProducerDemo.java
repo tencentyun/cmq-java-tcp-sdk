@@ -1,7 +1,6 @@
 package demo;
 
 import com.qcloud.cmq.client.common.ClientConfig;
-import com.qcloud.cmq.client.common.RequestIdHelper;
 import com.qcloud.cmq.client.common.ResponseCode;
 import com.qcloud.cmq.client.exception.MQClientException;
 import com.qcloud.cmq.client.exception.MQServerException;
@@ -15,7 +14,7 @@ public class ProducerDemo {
 
         Producer producer = new Producer();
         // 设置 Name Server地址，在控制台上获取， 必须设置
-        producer.setNameServerAddress("http://cmq-nameserver-gz.api.tencentyun.com");
+        producer.setNameServerAddress("http://cmq-nameserver-sh.tencentcloudapi.com");
         // 设置SecretId，在控制台上获取，必须设置
         producer.setSecretId("AKIDvlSyJT3SM7g4HKFwzslXK0VqzxkNMGbq");
         // 设置SecretKey，在控制台上获取，必须设置
@@ -28,7 +27,7 @@ public class ProducerDemo {
         producer.setRequestTimeoutMS(5000);
 
         // 消息发往的队列，在控制台创建
-        String queue = "queue-test10";
+        String queue = "test-10";
         try {
             // 启动对象前必须设置好相关参数
             producer.start();

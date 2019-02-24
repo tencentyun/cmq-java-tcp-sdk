@@ -83,17 +83,20 @@ public class SubscribeService {
                         @Override
                         public void onSuccess(BatchReceiveResult receiveResult) {
                             flightPullRequest.decrementAndGet();
+
                             if (receiveResult.getReturnCode() == ResponseCode.SUCCESS) {
-                                logger.debug("offer consume request");
                                 consumeExecutor.submit(new ConsumeRequest(receiveResult.getMessageList()));
-                                submitPullRequest();
+                            }else if(receiveResult.getReturnCode() != ResponseCode.NO_NEW_MESSAGES){
+                                logger.info("pull message error:" + receiveResult.getErrorMessage() + ", errorCode:"
+                                            + receiveResult.getReturnCode());
+                                shutdown();
                             }
                         }
 
                         @Override
                         public void onException(Throwable e) {
                             flightPullRequest.decrementAndGet();
-                            submitPullRequest();
+                            logger.info("pull message error :" + e.getMessage());
                         }
                     });
         } catch (RemoteException e) {
