@@ -11,9 +11,9 @@ public class ConsumerTransactionDemo {
         // 设置 Name Server地址，在控制台上获取， 必须设置
         consumer.setNameServerAddress("http://cmq-nameserver-gz.api.tencentyun.com");
         // 设置SecretId，在控制台上获取，必须设置
-        consumer.setSecretId("AKIDvlSyJT3SM7g4HKFwzslXK0VqzxkNMGbq");
+        consumer.setSecretId("xxx");
         // 设置SecretKey，在控制台上获取，必须设置
-        consumer.setSecretKey("GMH2bzCF8qNju1znQtBIE0b1JRO9oJfr");
+        consumer.setSecretKey("xxx");
         // 设置签名方式，可以不设置，默认为SHA1
         consumer.setSignMethod(ClientConfig.SIGN_METHOD_SHA256);
         // 批量拉取时最大拉取消息数量，默认16

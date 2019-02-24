@@ -16,9 +16,9 @@ public class ProducerDemo {
         // 设置 Name Server地址，在控制台上获取， 必须设置
         producer.setNameServerAddress("http://cmq-nameserver-sh.tencentcloudapi.com");
         // 设置SecretId，在控制台上获取，必须设置
-        producer.setSecretId("AKIDvlSyJT3SM7g4HKFwzslXK0VqzxkNMGbq");
+        producer.setSecretId("xxx");
         // 设置SecretKey，在控制台上获取，必须设置
-        producer.setSecretKey("GMH2bzCF8qNju1znQtBIE0b1JRO9oJfr");
+        producer.setSecretKey("xxx");
         // 设置签名方式，可以不设置，默认为SHA1
         producer.setSignMethod(ClientConfig.SIGN_METHOD_SHA256);
         // 设置发送消息失败时，重试的次数，设置为0表示不重试，默认为2
