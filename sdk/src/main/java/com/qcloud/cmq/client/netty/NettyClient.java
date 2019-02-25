@@ -359,7 +359,10 @@ public class NettyClient {
                     throw new RemoteConnectException(address);
                 }
                 if (!cw.isLogin()) {
-                    this.authChannel(cw);
+                    synchronized (this){
+                        if (!cw.isLogin())
+                            this.authChannel(cw);
+                    }
                 }
                 final Channel channel = cw.getChannel();
                 if (channel != null && channel.isActive()) {
@@ -406,7 +409,10 @@ public class NettyClient {
                     throw new RemoteConnectException(address);
                 }
                 if (!cw.isLogin()) {
-                    this.authChannel(cw);
+                    synchronized (this){
+                        if (!cw.isLogin())
+                            this.authChannel(cw);
+                    }
                 }
                 final Channel channel = cw.getChannel();
                 if (channel != null && channel.isActive()) {
@@ -445,7 +451,10 @@ public class NettyClient {
                     throw new RemoteConnectException(address);
                 }
                 if (!cw.isLogin()) {
-                    this.authChannel(cw);
+                    synchronized (this){
+                        if (!cw.isLogin())
+                            this.authChannel(cw);
+                    }
                 }
                 final Channel channel = cw.getChannel();
                 if (channel != null && channel.isActive()) {
@@ -671,7 +680,7 @@ public class NettyClient {
             ChannelFuture channelFuture = cw.getChannelFuture();
             if (channelFuture.awaitUninterruptibly(this.nettyClientConfig.getConnectTimeoutMillis())) {
                 if (cw.isOK()) {
-                    logger.info("createChannel: connect remote host[{}] success, {}", address, channelFuture.toString());
+                    //logger.info("createChannel: connect remote host[{}] success, {}", address, channelFuture.toString());
                     return cw;
                 } else {
                     logger.warn("createChannel: connect remote host[" + address + "] failed, " + channelFuture.toString(), channelFuture.cause());

@@ -25,12 +25,20 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>demo.ProducerDemo</mainClass>
+                            <mainClass>demo.MultiThreadTest</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>
