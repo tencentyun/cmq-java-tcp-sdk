@@ -49,6 +49,7 @@ public class SubscribeDemo {
         try {
             consumer.start();
             consumer.subscribe(queue, listener);
+
             System.out.println("Subscribe Success!");
         } catch (Exception e) {
             System.out.println("Subscribe Error:" + e);

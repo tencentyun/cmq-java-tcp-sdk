@@ -11,6 +11,7 @@ import com.qcloud.cmq.client.netty.RemoteException;
 import com.qcloud.cmq.client.protocol.Cmq;
 import org.slf4j.Logger;
 
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,6 +20,8 @@ public class ProducerImpl {
     private final Producer producer;
     private ServiceState serviceState = ServiceState.CREATE_JUST;
     private MQClientInstance mQClientInstance;
+
+    private final String contentCharSet = "UTF-8";
 
     private ConcurrentHashMap<String, List<String>> topicRouteTable = new ConcurrentHashMap<String, List<String>>();
     private ConcurrentHashMap<String, List<String>> queueRouteTable = new ConcurrentHashMap<String, List<String>>();
@@ -96,7 +99,8 @@ public class ProducerImpl {
         this.makeSureStateOK();
         Cmq.cmq_tcp_send_msg.Builder contentBuilder = Cmq.cmq_tcp_send_msg.newBuilder()
                 .setQueueName(queue)
-                .setMsgBody(ByteString.copyFrom(msgBody.getBytes()));
+                .setMsgBody(ByteString.copyFrom(msgBody.getBytes(Charset.forName(contentCharSet))));
+
         if (delaySeconds >= 0) {
             contentBuilder.setDelaySeconds(delaySeconds);
         }
@@ -152,7 +156,7 @@ public class ProducerImpl {
             contentBuilder.setDelaySeconds(delaySeconds);
         }
         for (String msg: msgList) {
-            contentBuilder.addMsgBody(ByteString.copyFrom(msg.getBytes()));
+            contentBuilder.addMsgBody(ByteString.copyFrom(msg.getBytes(Charset.forName(contentCharSet))));
         }
 
         if (ifTrans){
@@ -202,7 +206,7 @@ public class ProducerImpl {
         this.makeSureStateOK();
 
         Cmq.cmq_tcp_publish_msg.Builder contentBuilder = Cmq.cmq_tcp_publish_msg.newBuilder()
-                .setTopicName(topic).setMsgBody(ByteString.copyFrom(msgBody.getBytes()));
+                .setTopicName(topic).setMsgBody(ByteString.copyFrom(msgBody.getBytes(Charset.forName(contentCharSet))));
         if (routeKey != null) {
             contentBuilder.setRoutingKey(routeKey);
         }
@@ -260,7 +264,7 @@ public class ProducerImpl {
             contentBuilder.addAllMsgTags(tagList);
         }
         for (String msg: msgList) {
-            contentBuilder.addMsgBody(ByteString.copyFrom(msg.getBytes()));
+            contentBuilder.addMsgBody(ByteString.copyFrom(msg.getBytes(Charset.forName(contentCharSet))));
         }
         Cmq.CMQProto request = Cmq.CMQProto.newBuilder()
                 .setCmd(Cmq.CMQ_CMD.CMQ_TCP_BATCH_PUBLISH_MSG_VALUE)

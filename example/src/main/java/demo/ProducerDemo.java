@@ -14,11 +14,11 @@ public class ProducerDemo {
 
         Producer producer = new Producer();
         // 设置 Name Server地址，在控制台上获取， 必须设置
-        producer.setNameServerAddress("http://cmq-nameserver-sh.tencentcloudapi.com");
+        producer.setNameServerAddress("http://10.59.195.90");
         // 设置SecretId，在控制台上获取，必须设置
-        producer.setSecretId("xxx");
+        producer.setSecretId("AKID8UyFIOXo7kuvgSuDFckUzJdx5du9hV8M");
         // 设置SecretKey，在控制台上获取，必须设置
-        producer.setSecretKey("xxx");
+        producer.setSecretKey("6YHm10lKcrRqeC8XhsmRs2vn1kCNIaw1");
         // 设置签名方式，可以不设置，默认为SHA1
         producer.setSignMethod(ClientConfig.SIGN_METHOD_SHA256);
         // 设置发送消息失败时，重试的次数，设置为0表示不重试，默认为2
@@ -27,11 +27,11 @@ public class ProducerDemo {
         producer.setRequestTimeoutMS(5000);
 
         // 消息发往的队列，在控制台创建
-        String queue = "test-10";
+        String queue = "queue-test10";
         try {
             // 启动对象前必须设置好相关参数
             producer.start();
-            final String msg = "hello world";
+            final String msg = "tre张测试";
             // 同步单条发送消息
             SendResult result = producer.send(queue, msg);
             if (result.getReturnCode() == ResponseCode.SUCCESS) {

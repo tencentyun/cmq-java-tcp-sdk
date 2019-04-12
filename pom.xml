@@ -6,7 +6,7 @@
     <groupId>com.qcloud</groupId>
     <artifactId>cmq-sdk</artifactId>
     <name>cmq sdk</name>
-    <version>1.0.0</version>
+    <version>1.0.0.RELEASE</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
