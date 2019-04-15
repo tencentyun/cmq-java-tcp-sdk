@@ -89,7 +89,6 @@ public class SubscribeService {
                             }else if(receiveResult.getReturnCode() != ResponseCode.NO_NEW_MESSAGES){
                                 logger.info("pull message error:" + receiveResult.getErrorMessage() + ", errorCode:"
                                             + receiveResult.getReturnCode());
-                                shutdown();
                             }
                         }
 
