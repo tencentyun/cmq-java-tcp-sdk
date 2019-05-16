@@ -9,15 +9,15 @@ public class ConsumerTransactionDemo {
     public static void main(String[] args) {
         final Consumer consumer = new Consumer();
         // 设置 Name Server地址，在控制台上获取， 必须设置
-        consumer.setNameServerAddress("http://cmq-nameserver-gz.api.tencentyun.com");
+        consumer.setNameServerAddress("xxx");
         // 设置SecretId，在控制台上获取，必须设置
         consumer.setSecretId("xxx");
         // 设置SecretKey，在控制台上获取，必须设置
         consumer.setSecretKey("xxx");
         // 设置签名方式，可以不设置，默认为SHA1
         consumer.setSignMethod(ClientConfig.SIGN_METHOD_SHA256);
-        // 批量拉取时最大拉取消息数量，默认16
-        consumer.setBatchPullNumber(32);
+        // 批量拉取时最大拉取消息数量，范围为1-16
+        consumer.setBatchPullNumber(16);
         // 设置没有消息时等待时间，默认10s。可在consumer.receiveMsg等方法中传入具体的等待时间
         consumer.setPollingWaitSeconds(6);
         // 设置请求超时时间， 默认3000ms

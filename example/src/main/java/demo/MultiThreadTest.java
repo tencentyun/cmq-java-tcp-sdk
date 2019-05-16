@@ -11,11 +11,9 @@ import java.util.concurrent.*;
 
 public class MultiThreadTest {
     public static void main(String[] args) throws InterruptedException, MQClientException {
-        System.out.println("file.encoding:"+System.getProperty("file.encoding"));
-        System.out.println(Charset.defaultCharset());
         Producer producer = new Producer();
         // 设置 Name Server地址，在控制台上获取， 必须设置
-        producer.setNameServerAddress("http://cmq-nameserver-sh.tencentcloudapi.com");
+        producer.setNameServerAddress("xxx");
         // 设置SecretId，在控制台上获取，必须设置
         producer.setSecretId("xxx");
         // 设置SecretKey，在控制台上获取，必须设置
