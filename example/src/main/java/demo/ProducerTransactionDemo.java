@@ -19,7 +19,7 @@ public class ProducerTransactionDemo {
     public static void main(String[] args) {
         TransactionProducer producer = new TransactionProducer();
         // 设置 Name Server地址，在控制台上获取， 必须设置
-        producer.setNameServerAddress("http://cmq-nameserver-dev.api.tencentyun.com");
+        producer.setNameServerAddress("xxx");
         // 设置SecretId，在控制台上获取，必须设置
         producer.setSecretId("xxx");
         // 设置SecretKey，在控制台上获取，必须设置

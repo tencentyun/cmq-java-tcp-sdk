@@ -14,7 +14,7 @@ public class ProducerDemo {
 
         Producer producer = new Producer();
         // 设置 Name Server地址，在控制台上获取， 必须设置
-        producer.setNameServerAddress("http://10.59.195.90");
+        producer.setNameServerAddress("xxx");
         // 设置SecretId，在控制台上获取，必须设置
         producer.setSecretId("xxx");
         // 设置SecretKey，在控制台上获取，必须设置
