@@ -9,7 +9,11 @@ public class ConsumerTransactionDemo {
     public static void main(String[] args) {
         final Consumer consumer = new Consumer();
         // 设置 Name Server地址，在控制台上获取， 必须设置
-        consumer.setNameServerAddress("xxx");
+        // 地域对应的缩写 bj:北京 sh：上海 gz:广州 in:孟买 ca:北美 cd:成都 cq: 重庆
+        //  hk:香港 kr:韩国 ru:俄罗斯 sg:新加坡 shjr:上海金融 szjr:深圳金融 th:曼谷 use: 弗吉尼亚 usw： 美西 
+        // 私有网络地址：http://cmq-nameserver-vpc-{region}.api.tencentyun.com 支持腾讯云私有网络的云服务器内网访问
+        // 公网地址：    http://cmq-nameserver-{region}.tencentcloudapi.com
+        consumer.setNameServerAddress("http://cmq-nameserver-xxx.tencentcloudapi.com");
         // 设置SecretId，在控制台上获取，必须设置
         consumer.setSecretId("xxx");
         // 设置SecretKey，在控制台上获取，必须设置
