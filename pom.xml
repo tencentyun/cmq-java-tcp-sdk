@@ -18,7 +18,7 @@
     <packaging>pom</packaging>
 	<groupId>com.qcloud</groupId>
     <artifactId>cmq-sdk</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <name>cmq sdk</name>
 	<description>Tencent Cloud Message Queue java SDK </description>
 	<url>https://github.com/tencentyun/cmq-java-tcp-sdk</url>
