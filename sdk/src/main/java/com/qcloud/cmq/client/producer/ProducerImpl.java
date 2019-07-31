@@ -122,9 +122,9 @@ public class ProducerImpl {
                 return this.mQClientInstance.getCMQClient().sendMessage(accessList, request, timeout,
                         communicationMode, sendCallback, producer.getRetryTimesWhenSendFailed(), this);
             } catch (RemoteException e) {
-                logger.error("send msg error", e);
+                logger.error("send msg error {}", e);
             } catch (InterruptedException e) {
-                logger.error("send msg error", e);
+                logger.error("send msg error {}", e);
             }
         }
         throw new MQServerException(ResponseCode.SEND_REQUEST_ERROR, String.format("Send Message Error %d times", timesTotal));
@@ -177,9 +177,9 @@ public class ProducerImpl {
                 return this.mQClientInstance.getCMQClient().batchSendMessage(accessList, request, timeout,
                         communicationMode, sendCallback, producer.getRetryTimesWhenSendFailed(), this);
             } catch (RemoteException e) {
-                logger.error("send msg error", e);
+                logger.error("send msg error {}", e);
             } catch (InterruptedException e) {
-                logger.error("send msg error", e);
+                logger.error("send msg error {}", e);
             }
         }
         throw new MQServerException(ResponseCode.SEND_REQUEST_ERROR, String.format("Send Message Error %d times", timesTotal));
@@ -226,9 +226,9 @@ public class ProducerImpl {
                 return this.mQClientInstance.getCMQClient().publishMessage(accessList, request, timeout,
                         communicationMode, callback, producer.getRetryTimesWhenSendFailed(), this);
             } catch (RemoteException e) {
-                logger.error("send msg error", e);
+                logger.error("send msg error {}", e);
             } catch (InterruptedException e) {
-                logger.error("send msg error", e);
+                logger.error("send msg error {}", e);
             }
         }
         throw new MQServerException(ResponseCode.SEND_REQUEST_ERROR, String.format("Send Message Error %d times", timesTotal));
@@ -279,9 +279,9 @@ public class ProducerImpl {
                 return this.mQClientInstance.getCMQClient().batchPublishMessage(accessList, request, timeout,
                         communicationMode, callback, producer.getRetryTimesWhenSendFailed(), this);
             } catch (RemoteException e) {
-                logger.error("send msg error", e);
+                logger.error("send msg error {}", e);
             } catch (InterruptedException e) {
-                logger.error("send msg error", e);
+                logger.error("send msg error {}", e);
             }
         }
         throw new MQServerException(ResponseCode.SEND_REQUEST_ERROR, String.format("Send Message Error %d times", timesTotal));
