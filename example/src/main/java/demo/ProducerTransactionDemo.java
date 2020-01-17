@@ -90,13 +90,13 @@ public class ProducerTransactionDemo {
         }
 
     }
-}
 
-class TransactionStatusCheckerImpl implements TransactionStatusChecker{
-
-    @Override
-    public TransactionStatus checkStatus(Message msg) {
-        //用户实现，检查本地事务的执行状态 ... ...
-        return TransactionStatus.FAIL;
+    public static class TransactionStatusCheckerImpl implements TransactionStatusChecker {
+        @Override
+        public TransactionStatus checkStatus(Message msg) {
+            //用户实现，检查本地事务的执行状态 ... ...
+            return TransactionStatus.FAIL;
+        }
     }
 }
+

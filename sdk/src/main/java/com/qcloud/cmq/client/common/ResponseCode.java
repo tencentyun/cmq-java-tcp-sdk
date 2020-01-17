@@ -28,4 +28,7 @@ public class ResponseCode {
 
     public static final int NO_NEW_MESSAGES = 10200;
 
+    //queue
+    public static final int INVALID_REQUEST_PARAMETERS = 4000;
+
 }
