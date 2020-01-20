@@ -44,6 +44,7 @@
     </scm>
 	
 	<build>
+		<pluginManagement>
 		<plugins>
 			<!-- Source -->
 			<plugin>
@@ -92,6 +93,7 @@
 				</executions>
 			</plugin>
 		</plugins>
+		</pluginManagement>
     </build>
 	
 	<distributionManagement>
