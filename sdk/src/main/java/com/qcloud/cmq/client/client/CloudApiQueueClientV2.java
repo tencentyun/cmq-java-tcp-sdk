@@ -3,6 +3,7 @@ package com.qcloud.cmq.client.client;
 import com.qcloud.cmq.client.cloudapi.CloudApiQueueClient;
 import com.qcloud.cmq.client.cloudapi.QueueMeta;
 import com.qcloud.cmq.client.cloudapi.entity.CmqQueue;
+import com.qcloud.cmq.client.common.AssertUtil;
 import com.qcloud.cmq.client.common.CMQTool;
 import com.qcloud.cmq.client.common.ResponseCode;
 import com.qcloud.cmq.client.exception.MQClientException;
@@ -87,7 +88,7 @@ public class CloudApiQueueClientV2 implements CloudApiQueueClient {
     }
 
     @Override
-    public List<CmqQueue> listQueue(String searchWord, int offset, int limit) {
+    public List<CmqQueue> describeQueue(String searchWord, int offset, int limit) {
         JSONObject jsonObject = ListQueue(searchWord, offset, limit);
         JSONArray jsonArray = jsonObject.getJSONArray("queueList");
         List<CmqQueue> queueList = new ArrayList<>(jsonArray.length());
@@ -99,6 +100,43 @@ public class CloudApiQueueClientV2 implements CloudApiQueueClient {
             queueList.add(cmqQueue);
         }
         return queueList;
+    }
+
+    @Override
+    public void deleteQueue(String queueName) {
+        TreeMap<String, String> param = new TreeMap<String, String>();
+        AssertUtil.assertParamNotNull(queueName, "Invalid parameter:topicName is empty");
+        param.put("queueName", queueName);
+
+        String result = cloudApiHttpUtil.call("DeleteQueue", param);
+        CMQTool.checkResult(result);
+    }
+
+    @Override
+    public QueueMeta getQueueAttributes(String queueName) {
+        TreeMap<String, String> param = new TreeMap<String, String>();
+
+        param.put("queueName", queueName);
+        String result = cloudApiHttpUtil.call("GetQueueAttributes", param);
+        JSONObject jsonObj = new JSONObject(result);
+        CMQTool.checkResult(result);
+
+        QueueMeta meta = new QueueMeta();
+        meta.setMaxMsgHeapNum(jsonObj.getInt("maxMsgHeapNum"));
+        meta.setPollingWaitSeconds(jsonObj.getInt("pollingWaitSeconds"));
+        meta.setVisibilityTimeout(jsonObj.getInt("visibilityTimeout"));
+        meta.setMaxMsgSize(jsonObj.getInt("maxMsgSize"));
+        meta.setMsgRetentionSeconds(jsonObj.getInt("msgRetentionSeconds"));
+        meta.setCreateTime(jsonObj.getInt("createTime"));
+        meta.setLastModifyTime(jsonObj.getInt("lastModifyTime"));
+        meta.setActiveMsgNum(jsonObj.getInt("activeMsgNum"));
+        meta.setInactiveMsgNum(jsonObj.getInt("inactiveMsgNum"));
+        meta.setRewindmsgNum(jsonObj.getInt("rewindMsgNum"));
+        meta.setMinMsgTime(jsonObj.getInt("minMsgTime"));
+        meta.setDelayMsgNum(jsonObj.getInt("delayMsgNum"));
+        meta.setRewindSeconds(jsonObj.getInt("rewindSeconds"));
+
+        return meta;
     }
 
 }

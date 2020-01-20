@@ -27,15 +27,20 @@ public class CloudApiDemo {
         cloudApiManager.setConnectTimeout(5000);
 
         cloudApiManager.start();
-
-        int queueNum = cloudApiManager.countQueue("searchKeyWord",0,100);
+        //查询队列数量
+        int queueNum = cloudApiManager.countQueue("searchKeyWord", 0, 100);
         System.out.println("queue num :" + queueNum);
-
-        List<CmqQueue> queueList = cloudApiManager.describeQueue("searchKeyWord",0,100);
+        //查询队列
+        List<CmqQueue> queueList = cloudApiManager.describeQueue("searchKeyWord", 0, 100);
         System.out.println("queue List :" + queueList.toString());
 
         QueueMeta queueMeta = new QueueMeta();
         queueMeta.setMaxMsgSize(1024);
-        //cloudApiManager.createQueue("queueName",queueMeta);
+        //创建队列
+        cloudApiManager.createQueue("queueName", queueMeta);
+        //创建队列并绑定主题
+        cloudApiManager.createQueueAndSubscribe("queueName2", queueMeta, "topicName", "subscribeName");
+        //查询队列属性
+        cloudApiManager.describeQueueAttributes("queueName2");
     }
 }

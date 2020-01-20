@@ -6,5 +6,7 @@ package com.qcloud.cmq.client.cloudapi;
  */
 public interface CloudApiTopicClient {
 
-    void createSubscribe(SubscribeConfig subscribeConfig);
+    String createSubscribe(SubscribeConfig subscribeConfig);
+
+    String deleteSubscribe(String topicName, String subscriptionName);
 }

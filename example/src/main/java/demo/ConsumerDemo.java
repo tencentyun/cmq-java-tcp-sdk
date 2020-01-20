@@ -176,5 +176,14 @@ public class ConsumerDemo {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        //使用监听者获取消息，不用每次都调用receive方法了
+        consumer.subscribe(queue, new MessageListener() {
+            @Override
+            public List<Long> consumeMessage(String queue, List<Message> messages) {
+                //todo 获取到消息后的逻辑
+                return null;
+            }
+        });
     }
 }

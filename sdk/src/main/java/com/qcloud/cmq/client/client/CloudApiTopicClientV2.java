@@ -8,6 +8,7 @@ import com.qcloud.cmq.client.common.ResponseCode;
 import com.qcloud.cmq.client.exception.MQClientException;
 import com.qcloud.cmq.client.http.CloudApiHttpClient;
 import com.qcloud.cmq.client.http.HttpWrapper;
+import com.qcloud.cmq.client.http.Json.JSONObject;
 import io.netty.util.internal.StringUtil;
 
 import java.util.List;
@@ -26,13 +27,13 @@ public class CloudApiTopicClientV2 implements CloudApiTopicClient {
     }
 
     @Override
-    public void createSubscribe(SubscribeConfig subscribeConfig) {
-        createSubscribe(subscribeConfig.getTopicName(), subscribeConfig.getSubscriptionName(), subscribeConfig.getEndpoint()
+    public String createSubscribe(SubscribeConfig subscribeConfig) {
+        return createSubscribe(subscribeConfig.getTopicName(), subscribeConfig.getSubscriptionName(), subscribeConfig.getEndpoint()
                 , subscribeConfig.getProtocol(), subscribeConfig.getFilterTag(), subscribeConfig.getBindingKey(), subscribeConfig.getNotifyStrategy()
                 , subscribeConfig.getNotifyContentFormat());
     }
 
-    public void createSubscribe(String topicName, String subscriptionName, String endpoint, String protocol,
+    public String createSubscribe(String topicName, String subscriptionName, String endpoint, String protocol,
                                 List<String> filterTag, List<String> bindingKey, String notifyStrategy, String notifyContentFormat) {
         if (filterTag != null && filterTag.size() > 5) {
             throw new MQClientException(ResponseCode.INVALID_REQUEST_PARAMETERS, "Invalid parameter: Tag number > 5");
@@ -56,7 +57,7 @@ public class CloudApiTopicClientV2 implements CloudApiTopicClient {
             param.put("notifyStrategy", notifyStrategy);
         }
 
-        if (StringUtil.isNullOrEmpty(notifyContentFormat)) {
+        if (!StringUtil.isNullOrEmpty(notifyContentFormat)) {
             param.put("notifyContentFormat", notifyContentFormat);
         }
 
@@ -74,6 +75,24 @@ public class CloudApiTopicClientV2 implements CloudApiTopicClient {
 
         String result = cloudApiHttpUtil.call("Subscribe", param);
         CMQTool.checkResult(result);
+
+        JSONObject jsonObject = new JSONObject(result);
+        return jsonObject.getString("subscriptionId");
+    }
+
+    @Override
+    public String deleteSubscribe(String topicName, String subscriptionName) {
+        TreeMap<String, String> param = new TreeMap<String, String>();
+        AssertUtil.assertParamNotNull(topicName,"Invalid parameter:topicName is empty");
+        param.put("topicName", topicName);
+
+        AssertUtil.assertParamNotNull(subscriptionName,"Invalid parameter:subscriptionName is empty");
+        param.put("subscriptionName", subscriptionName);
+
+        String result = cloudApiHttpUtil.call("Unsubscribe", param);
+        CMQTool.checkResult(result);
+
+        return result;
     }
 
 }

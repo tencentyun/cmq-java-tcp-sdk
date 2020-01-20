@@ -24,9 +24,9 @@ public class CloudApiManager extends CloudApiClientConfig {
     }
 
     private void initClient() {
-        if(cloudApiTopicClient == null || cloudApiQueueClient == null){
-            synchronized (this){
-                if(cloudApiTopicClient == null || cloudApiQueueClient == null){
+        if (cloudApiTopicClient == null || cloudApiQueueClient == null) {
+            synchronized (this) {
+                if (cloudApiTopicClient == null || cloudApiQueueClient == null) {
                     CloudApiHttpClient cloudApiHttpClient = new CloudApiHttpClient(this);
                     cloudApiTopicClient = new CloudApiTopicClientV2(cloudApiHttpClient);
                     cloudApiQueueClient = new CloudApiQueueClientV2(cloudApiHttpClient);
@@ -40,7 +40,7 @@ public class CloudApiManager extends CloudApiClientConfig {
     }
 
     public String createQueue(String queueName, QueueMeta queueMeta) {
-        AssertUtil.assertParamNotNull(queueMeta,"QueueMeta is null");
+        AssertUtil.assertParamNotNull(queueMeta, "QueueMeta is null");
         return cloudApiQueueClient.createQueue(queueName, queueMeta);
     }
 
@@ -49,11 +49,19 @@ public class CloudApiManager extends CloudApiClientConfig {
     }
 
     public List<CmqQueue> describeQueue(String searchWord, int offset, int limit) {
-        return cloudApiQueueClient.listQueue(searchWord, offset, limit);
+        return cloudApiQueueClient.describeQueue(searchWord, offset, limit);
     }
 
     public String createQueueAndSubscribe(String queueName, String topicName, String subscribeName) {
         return createQueueAndSubscribe(queueName, new QueueMeta(), topicName, subscribeName);
+    }
+
+    public String createSubscribe(SubscribeConfig subscribeConfig) {
+        return cloudApiTopicClient.createSubscribe(subscribeConfig);
+    }
+
+    public void deleteSubscribe(String topicName, String subscriptionName) {
+        cloudApiTopicClient.deleteSubscribe(topicName, subscriptionName);
     }
 
     public String createQueueAndSubscribe(String queueName, QueueMeta queueMeta, String topicName, String subscribeName) {
@@ -63,10 +71,20 @@ public class CloudApiManager extends CloudApiClientConfig {
         subscribeConfig.setTopicName(topicName);
         subscribeConfig.setProtocol("queue");
         subscribeConfig.setSubscriptionName(subscribeName);
+        subscribeConfig.setEndpoint(queueName);
 
         cloudApiTopicClient.createSubscribe(subscribeConfig);
 
         return queueId;
+    }
+
+
+    public QueueMeta describeQueueAttributes(String queueName) {
+        return cloudApiQueueClient.getQueueAttributes(queueName);
+    }
+
+    public void deleteQueue(String queueName) {
+        cloudApiQueueClient.deleteQueue(queueName);
     }
 
 

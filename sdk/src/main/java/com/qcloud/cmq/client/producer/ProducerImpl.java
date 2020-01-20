@@ -189,6 +189,10 @@ public class ProducerImpl {
         return publishImpl(topic, msgBody, routeKey, null, CommunicationMode.SYNC, null, timeout);
     }
 
+    PublishResult publish(String topic, String msgBody, long timeout) throws MQClientException, MQServerException {
+        return publishImpl(topic, msgBody, null, null, CommunicationMode.SYNC, null, timeout);
+    }
+
     void publish(String topic, String msgBody, String routeKey, PublishCallback callback, long timeout) throws MQClientException, MQServerException {
         publishImpl(topic, msgBody, routeKey, null, CommunicationMode.ASYNC, callback, timeout);
     }

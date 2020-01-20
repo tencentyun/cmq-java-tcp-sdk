@@ -14,5 +14,9 @@ public interface CloudApiQueueClient {
 
     int countQueue(String searchWord, int offset, int limit);
 
-    List<CmqQueue> listQueue(String searchWord, int offset, int limit);
+    List<CmqQueue> describeQueue(String searchWord, int offset, int limit);
+
+    void deleteQueue(String queueName);
+
+    QueueMeta getQueueAttributes(String queueName);
 }
