@@ -360,8 +360,9 @@ public class NettyClient {
                 }
                 if (!cw.isLogin()) {
                     synchronized (this){
-                        if (!cw.isLogin())
-                            this.authChannel(cw);
+                        if (!cw.isLogin()) {
+                            this.authChannel(cw, timeoutMillis);
+                        }
                     }
                 }
                 final Channel channel = cw.getChannel();
@@ -410,8 +411,9 @@ public class NettyClient {
                 }
                 if (!cw.isLogin()) {
                     synchronized (this){
-                        if (!cw.isLogin())
-                            this.authChannel(cw);
+                        if (!cw.isLogin()) {
+                            this.authChannel(cw, timeoutMillis);
+                        }
                     }
                 }
                 final Channel channel = cw.getChannel();
@@ -452,8 +454,9 @@ public class NettyClient {
                 }
                 if (!cw.isLogin()) {
                     synchronized (this){
-                        if (!cw.isLogin())
-                            this.authChannel(cw);
+                        if (!cw.isLogin()) {
+                            this.authChannel(cw, timeoutMillis);
+                        }
                     }
                 }
                 final Channel channel = cw.getChannel();
@@ -694,7 +697,7 @@ public class NettyClient {
         return null;
     }
 
-    private void authChannel(ChannelWrapper cw) throws InterruptedException,
+    private void authChannel(ChannelWrapper cw, long requestTimeout) throws InterruptedException,
             RemoteTimeoutException, RemoteSendRequestException {
         if (this.authData == null) {
             throw new RemoteSendRequestException(RemoteHelper.parseSocketAddressAddr(cw.getChannel().remoteAddress()),
@@ -704,8 +707,8 @@ public class NettyClient {
                 .setCmd(Cmq.CMQ_CMD.CMQ_TCP_AUTH_VALUE)
                 .setSeqno(RequestIdHelper.getNextSeqNo())
                 .setTcpAuth(this.authData).build();
-        Cmq.CMQProto response = this.invokeSyncImpl(cw.getChannel(), request, 2000);
-        if (response.getResult() == ResponseCode.SUCCESS) {
+        Cmq.CMQProto response = this.invokeSyncImpl(cw.getChannel(), request, requestTimeout);
+        if (response.getResult() == ResponseCode.SUCCESS || response.getResult() == ResponseCode.ALREADY_AUTHORIZED) {
             cw.setLogin();
         } else {
             throw new RemoteSendRequestException(RemoteHelper.parseSocketAddressAddr(cw.getChannel().remoteAddress()),
@@ -715,7 +718,7 @@ public class NettyClient {
 
     static class ChannelWrapper {
         private final ChannelFuture channelFuture;
-        private boolean isLogin = false;
+        private volatile boolean isLogin = false;
 
         ChannelWrapper(ChannelFuture channelFuture) {
             this.channelFuture = channelFuture;

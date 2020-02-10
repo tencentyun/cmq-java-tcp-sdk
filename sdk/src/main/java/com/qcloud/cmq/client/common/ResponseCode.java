@@ -3,6 +3,7 @@ package com.qcloud.cmq.client.common;
 public class ResponseCode {
 
     public static final int SUCCESS = 0;
+    public static final int ALREADY_AUTHORIZED = 307;
 
     public static final int SYSTEM_ERROR = 1;
 
