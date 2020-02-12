@@ -3,6 +3,7 @@ package com.qcloud.cmq.client.common;
 public class ResponseCode {
 
     public static final int SUCCESS = 0;
+    public static final int ALREADY_AUTHORIZED = 307;
 
     public static final int SYSTEM_ERROR = 1;
 
@@ -27,5 +28,8 @@ public class ResponseCode {
     public static final int ROUTE_NOT_FOUND = 4040;
 
     public static final int NO_NEW_MESSAGES = 10200;
+
+    //queue
+    public static final int INVALID_REQUEST_PARAMETERS = 4000;
 
 }

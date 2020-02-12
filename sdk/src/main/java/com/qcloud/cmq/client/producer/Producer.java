@@ -1,7 +1,6 @@
 package com.qcloud.cmq.client.producer;
 
 import com.qcloud.cmq.client.common.ClientConfig;
-import com.qcloud.cmq.client.common.TransactionStatus;
 import com.qcloud.cmq.client.exception.MQClientException;
 import com.qcloud.cmq.client.exception.MQServerException;
 
@@ -58,6 +57,10 @@ public class Producer extends ClientConfig {
 
     public PublishResult publish(String topic, String msgBody, String routeKey) throws MQClientException, MQServerException {
         return producer.publish(topic, msgBody, routeKey, this.getRequestTimeoutMS());
+    }
+
+    public PublishResult publish(String topic, String msgBody) throws MQClientException, MQServerException {
+        return producer.publish(topic, msgBody, this.getRequestTimeoutMS());
     }
 
     public PublishResult publish(String topic, String msgBody, List<String> tagList) throws MQClientException, MQServerException {

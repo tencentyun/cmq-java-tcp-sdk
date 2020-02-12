@@ -17,10 +17,10 @@ public class ConsumerDemo {
         //  hk:香港 kr:韩国 ru:俄罗斯 sg:新加坡 shjr:上海金融 szjr:深圳金融 th:曼谷 use: 弗吉尼亚 usw： 美西 
         // 私有网络地址：http://cmq-nameserver-vpc-{region}.api.tencentyun.com 支持腾讯云私有网络的云服务器内网访问
         // 公网地址：    http://cmq-nameserver-{region}.tencentcloudapi.com
-        consumer.setNameServerAddress("http://cmq-nameserver-xxx.tencentcloudapi.com");
+        consumer.setNameServerAddress("http://cmq-nameserver-xx.tencentcloudapi.com");
      
         // 设置SecretId，在控制台上获取，必须设置
-        consumer.setSecretId("xxx");
+        consumer.setSecretId("xxxx");
         // 设置SecretKey，在控制台上获取，必须设置
         consumer.setSecretKey("xxx");
         // 设置签名方式，可以不设置，默认为SHA1
@@ -40,6 +40,7 @@ public class ConsumerDemo {
             // 启动消费者前必须设置好参数
             consumer.start();
             // 单条消息拉取，没有消息可消费时等待10s，不传入该参数则使用consumer设置的等待时间
+            // 建议在try-catch中接收，出现异常可以打印日志
             ReceiveResult result = consumer.receiveMsg(queue, 10);
 
             int ret = result.getReturnCode();
@@ -170,11 +171,30 @@ public class ConsumerDemo {
             e.printStackTrace();
         }
 
+        //使用监听者获取消息，不用每次都调用receive方法了
+        consumer.subscribe(queue, new MessageListener() {
+            @Override
+            public List<Long> consumeMessage(String queue, List<Message> messages) {
+                //todo 获取到消息后的逻辑
+                return null;
+            }
+        });
+
+        //consumer.shutdown之前，取消监听
         try {
-            Thread.sleep(1000);
+            Thread.sleep(5000);
+            consumer.unSubscribe(queue);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Thread.sleep(3000);
             consumer.shutdown();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+
     }
 }

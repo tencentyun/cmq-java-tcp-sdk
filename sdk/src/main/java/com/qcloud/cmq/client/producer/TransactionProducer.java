@@ -64,7 +64,7 @@ public class TransactionProducer extends Producer {
         try {
             result = this.sendTransactionMsg(queue, message, this.getFirstCheckInterval());
         } catch (Exception e) {
-            throw new MQClientException("Send message error", null);
+            throw new MQClientException("Send message error", e);
         }
 
         if (result.getReturnCode() != ResponseCode.SUCCESS){

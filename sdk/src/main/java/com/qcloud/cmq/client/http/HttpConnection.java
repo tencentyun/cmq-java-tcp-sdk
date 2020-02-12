@@ -25,6 +25,11 @@ class HttpConnection {
         this.isKeepAlive = true;
     }
 
+    HttpConnection(int timeout,boolean isKeepAlive) {
+        this.timeout = timeout;
+        this.isKeepAlive = isKeepAlive;
+    }
+
     private URLConnection newHttpConnection(String url) throws KeyManagementException, NoSuchAlgorithmException, IOException{
         trustAllHttpsCertificates();
         URLConnection connection;

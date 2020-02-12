@@ -7,6 +7,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <skip.assembly>true</skip.assembly>
+		<maven.test.skip>true</maven.test.skip>
     </properties>
 
     <modules>
@@ -44,6 +45,7 @@
     </scm>
 	
 	<build>
+		<pluginManagement>
 		<plugins>
 			<!-- Source -->
 			<plugin>
@@ -92,6 +94,7 @@
 				</executions>
 			</plugin>
 		</plugins>
+		</pluginManagement>
     </build>
 	
 	<distributionManagement>

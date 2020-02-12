@@ -35,6 +35,7 @@ public class MQClientInstance {
         this.clientId = clientId;
         NettyClientConfig nettyClientConfig = new NettyClientConfig();
         nettyClientConfig.setClientCallbackExecutorThreads(clientConfig.getClientCallbackExecutorThreads());
+        nettyClientConfig.setConnectTimeoutMillis(clientConfig.getRequestTimeoutMS());
         CMQClientHandler cMQClientHandler = new CMQClientHandler(this);
         this.cMQClient = new CMQClient(nettyClientConfig, cMQClientHandler, clientConfig, clientId);
         logger.info("created a new client Instance, FactoryIndex: {} ClientID: {} {} ",
