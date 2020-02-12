@@ -360,4 +360,56 @@ public class MessageTest {
         countDownLatch.await(20, TimeUnit.SECONDS);
         Assert.assertEquals(1, atomicInteger.get());
     }
+
+    @Test
+    public void MultiThread() throws InterruptedException {
+        int senderNum = 200;
+        int messageNum = 500;
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        CountDownLatch countDownLatch = new CountDownLatch(senderNum);
+
+        Thread[] senders = new Thread[senderNum];
+        for (int i = 0; i < senderNum; i++) {
+            senders[i] = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < messageNum; j++) {
+                        try {
+                            producer.send(queueName, msg);
+                        } catch (Exception e) {
+                            atomicInteger.incrementAndGet();
+                            e.printStackTrace();
+                        }
+                    }
+                    countDownLatch.countDown();
+                }
+            });
+            senders[i].start();
+        }
+        countDownLatch.await(1000, TimeUnit.SECONDS);
+        Assert.assertEquals(atomicInteger.get(), 0);
+
+        CountDownLatch receiverCountDownLatch =  new CountDownLatch(senderNum);
+        Thread[] receiver = new Thread[senderNum];
+        for (int i = 0; i < senderNum; i++) {
+            receiver[i] = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < messageNum; j++) {
+                        try {
+                            ReceiveResult receiveResult = consumer.receiveMsg(queueName);
+                            consumer.deleteMsg(queueName, receiveResult.getMessage().getReceiptHandle());
+                        } catch (Exception e) {
+                            atomicInteger.incrementAndGet();
+                            e.printStackTrace();
+                        }
+                    }
+                    receiverCountDownLatch.countDown();
+                }
+            });
+            receiver[i].start();
+        }
+        receiverCountDownLatch.await(1000,TimeUnit.SECONDS);
+        Assert.assertEquals(atomicInteger.get(), 0);
+    }
 }

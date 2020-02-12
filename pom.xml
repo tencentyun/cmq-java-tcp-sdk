@@ -7,6 +7,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <skip.assembly>true</skip.assembly>
+		<maven.test.skip>true</maven.test.skip>
     </properties>
 
     <modules>
