@@ -1,6 +1,6 @@
 package com.qcloud.cmq.client.exception;
 
-public class MQServerException extends Exception {
+public class MQServerException extends RuntimeException {
     private static final long serialVersionUID = -2318482622777702963L;
     private final int responseCode;
     private final String errorMessage;

@@ -3,7 +3,7 @@ package com.qcloud.cmq.client.exception;
 
 import com.qcloud.cmq.client.common.ResponseCode;
 
-public class MQClientException extends Exception {
+public class MQClientException extends RuntimeException {
     private static final long serialVersionUID = -8332788844751379650L;
     private int responseCode;
     private String errorMessage;
