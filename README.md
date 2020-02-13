@@ -17,7 +17,7 @@ CMQ tcp协议的java sdk
 ## 方式二：获取源码本地依赖
  - 获取master代码：
     `git clone https://github.com/tencentyun/cmq-java-tcp-sdk.git`
- - 获取指定tag代码，如v1.1.1
+ - 获取指定tag代码，如v1.1.1：
     `git clone --branch v1.1.1 https://github.com/tencentyun/cmq-java-tcp-sdk.git`
 
 # 特性说明
