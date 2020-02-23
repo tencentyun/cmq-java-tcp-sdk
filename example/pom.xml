@@ -3,8 +3,8 @@
 
     <parent>
         <groupId>com.qcloud</groupId>
-        <artifactId>cmq-sdk</artifactId>
-        <version>1.1.0</version>
+        <artifactId>cmq-tcp</artifactId>
+        <version>1.1.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
