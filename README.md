@@ -6,12 +6,12 @@ CMQ tcp协议的java sdk
 # 使用方式
 
 ## 方式一：直接maven依赖
-新版的TCP SDK的`artifactId`从`cmq-client`变更为`cmq-tcp`
+新版的TCP SDK的`artifactId`从`cmq-client`变更为`cmq-tcp-client`
 ### 新版SDK
 ```xml
 <dependency>
     <groupId>com.qcloud</groupId>
-    <artifactId>cmq-tcp</artifactId>
+    <artifactId>cmq-tcp-client</artifactId>
     <version>1.1.1</version>
 </dependency>
 ```
