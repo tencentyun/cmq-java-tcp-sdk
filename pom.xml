@@ -115,7 +115,7 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>cmq-tcp</artifactId>
+                <artifactId>cmq-tcp-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
 			<dependency>
