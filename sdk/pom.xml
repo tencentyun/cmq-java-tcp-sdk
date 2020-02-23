@@ -3,15 +3,15 @@
 
     <parent>
         <groupId>com.qcloud</groupId>
-        <artifactId>cmq-tcp</artifactId>
+        <artifactId>cmq-sdk</artifactId>
         <version>1.1.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
 	<groupId>com.qcloud</groupId>
-    <artifactId>cmq-client</artifactId>
-    <name>cmq client</name>
+    <artifactId>cmq-tcp-client</artifactId>
+    <name>cmq tcp client</name>
 
     <dependencies>
         <dependency>
