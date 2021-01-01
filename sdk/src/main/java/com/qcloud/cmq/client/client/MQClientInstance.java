@@ -26,18 +26,23 @@ public class MQClientInstance {
     private final ConcurrentHashMap<String, NameServerClient> nameServerTable = new ConcurrentHashMap<String, NameServerClient>();
     private final Lock lockNameServer = new ReentrantLock();
 
-    private final CMQClient cMQClient;
+//    private final CMQClient cMQClient;
+    private CMQClientInterceptor.Chain cMQClient;
+
 
     private ServiceState serviceState = ServiceState.CREATE_JUST;
 
-    MQClientInstance(ClientConfig clientConfig, int instanceIndex, String clientId) {
+    MQClientInstance(ClientConfig clientConfig, int instanceIndex, String clientId,
+                     List<CMQClientInterceptor> interceptors) {
         this.clientConfig = clientConfig;
         this.clientId = clientId;
         NettyClientConfig nettyClientConfig = new NettyClientConfig();
         nettyClientConfig.setClientCallbackExecutorThreads(clientConfig.getClientCallbackExecutorThreads());
         nettyClientConfig.setConnectTimeoutMillis(clientConfig.getRequestTimeoutMS());
         CMQClientHandler cMQClientHandler = new CMQClientHandler(this);
-        this.cMQClient = new CMQClient(nettyClientConfig, cMQClientHandler, clientConfig, clientId);
+        this.cMQClient = new CMQClientInterceptor.Chains(new CMQClient(nettyClientConfig, cMQClientHandler,
+                clientConfig, clientId), interceptors);
+//        this.cMQClient = new CMQClient(nettyClientConfig, cMQClientHandler, clientConfig, clientId);
         logger.info("created a new client Instance, FactoryIndex: {} ClientID: {} {} ",
             instanceIndex, this.clientId, this.clientConfig);
     }
@@ -178,7 +183,7 @@ public class MQClientInstance {
         this.producerTable.remove(producer);
     }
 
-    public CMQClient getCMQClient() {
+    public CMQClientInterceptor.Chain getCMQClient() {
         return cMQClient;
     }
 

@@ -35,7 +35,8 @@ public class ProducerImpl {
             case CREATE_JUST:
                 this.serviceState = ServiceState.START_FAILED;
                 this.producer.changeInstanceNameToPID();
-                this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.producer);
+                this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.producer,
+                        Arrays.asList());
                 mQClientInstance.registerProducer(this);
                 mQClientInstance.start();
                 logger.info("the producer [{}] start OK.", this.producer);

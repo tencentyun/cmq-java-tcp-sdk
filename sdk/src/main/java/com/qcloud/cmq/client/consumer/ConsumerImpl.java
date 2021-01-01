@@ -14,6 +14,7 @@ import com.qcloud.cmq.client.netty.RemoteException;
 import com.qcloud.cmq.client.protocol.Cmq;
 import org.slf4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,7 +58,8 @@ public class ConsumerImpl {
         switch (this.serviceState) {
             case CREATE_JUST:
                 this.serviceState = ServiceState.START_FAILED;
-                this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.consumer);
+                this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.consumer,
+                        Arrays.asList());
                 mQClientInstance.registerConsumer(this);
                 mQClientInstance.start();
                 logger.info("the consumer [{}] start OK", this.consumer);

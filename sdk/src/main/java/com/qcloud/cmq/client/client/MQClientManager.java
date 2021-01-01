@@ -3,6 +3,7 @@ package com.qcloud.cmq.client.client;
 import com.qcloud.cmq.client.common.ClientConfig;
 import com.qcloud.cmq.client.common.LogHelper;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,12 +21,13 @@ public class MQClientManager {
         return instance;
     }
 
-    public MQClientInstance getAndCreateMQClientInstance(final ClientConfig clientConfig) {
+    public MQClientInstance getAndCreateMQClientInstance(final ClientConfig clientConfig,
+                                                         List<CMQClientInterceptor> interceptors) {
         String clientId = clientConfig.buildMQClientId();
         MQClientInstance instance = this.factoryTable.get(clientId);
         if (null == instance) {
             instance = new MQClientInstance(clientConfig.cloneClientConfig(),
-                    this.factoryIndexGenerator.getAndIncrement(), clientId);
+                    this.factoryIndexGenerator.getAndIncrement(), clientId, interceptors);
             MQClientInstance prev = this.factoryTable.putIfAbsent(clientId, instance);
             if (prev != null) {
                 instance = prev;
