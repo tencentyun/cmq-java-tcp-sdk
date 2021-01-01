@@ -12,14 +12,17 @@ public class Consumer extends ClientConfig {
 
     private List<CMQClientInterceptor> interceptors;
 
-    private ConsumerImpl consumer = new ConsumerImpl(this, interceptors);
+    private ConsumerImpl consumer;
 
     public Consumer(List<CMQClientInterceptor> interceptors) {
         this.interceptors = interceptors;
+        this.consumer = new ConsumerImpl(this, interceptors);
     }
 
     public Consumer() {
         this.interceptors = new ArrayList<>();
+        this.consumer = new ConsumerImpl(this, interceptors);
+
     }
 
     public void start() throws MQClientException {
