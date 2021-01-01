@@ -1,6 +1,7 @@
 package com.qcloud.cmq.client.producer;
 
 import com.google.protobuf.ByteString;
+import com.qcloud.cmq.client.client.CMQClientInterceptor;
 import com.qcloud.cmq.client.common.*;
 import com.qcloud.cmq.client.exception.MQClientException;
 import com.qcloud.cmq.client.exception.MQServerException;
@@ -20,14 +21,16 @@ public class ProducerImpl {
     private final Producer producer;
     private ServiceState serviceState = ServiceState.CREATE_JUST;
     private MQClientInstance mQClientInstance;
+    private List<CMQClientInterceptor> interceptors;
 
     private final String contentCharSet = "UTF-8";
 
     private ConcurrentHashMap<String, List<String>> topicRouteTable = new ConcurrentHashMap<String, List<String>>();
     private ConcurrentHashMap<String, List<String>> queueRouteTable = new ConcurrentHashMap<String, List<String>>();
 
-    ProducerImpl(final Producer producer) {
+    ProducerImpl(final Producer producer, List<CMQClientInterceptor> interceptors) {
         this.producer = producer;
+        this.interceptors = interceptors;
     }
 
     synchronized protected void start() throws MQClientException {
@@ -36,7 +39,7 @@ public class ProducerImpl {
                 this.serviceState = ServiceState.START_FAILED;
                 this.producer.changeInstanceNameToPID();
                 this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.producer,
-                        Arrays.asList());
+                        interceptors);
                 mQClientInstance.registerProducer(this);
                 mQClientInstance.start();
                 logger.info("the producer [{}] start OK.", this.producer);

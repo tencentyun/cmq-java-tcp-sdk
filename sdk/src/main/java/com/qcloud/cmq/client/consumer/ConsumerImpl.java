@@ -1,6 +1,7 @@
 package com.qcloud.cmq.client.consumer;
 
 import com.google.protobuf.TextFormat;
+import com.qcloud.cmq.client.client.CMQClientInterceptor;
 import com.qcloud.cmq.client.common.ServiceState;
 import com.qcloud.cmq.client.client.MQClientManager;
 import com.qcloud.cmq.client.common.LogHelper;
@@ -27,11 +28,13 @@ public class ConsumerImpl {
     private final ConcurrentHashMap<String, List<String>> queueRouteTable = new ConcurrentHashMap<String, List<String>>();
     private final ConcurrentHashMap<String, SubscribeService> subscribeTable = new ConcurrentHashMap<String, SubscribeService>();
     private volatile ServiceState serviceState = ServiceState.CREATE_JUST;
+    private List<CMQClientInterceptor> interceptors;
 
     private volatile boolean needUpdateRoute = true;
 
-    ConsumerImpl(Consumer consumer) {
+    ConsumerImpl(Consumer consumer, List<CMQClientInterceptor> interceptors) {
         this.consumer = consumer;
+        this.interceptors = interceptors;
     }
 
     private void makeSureStateOK() throws MQClientException {

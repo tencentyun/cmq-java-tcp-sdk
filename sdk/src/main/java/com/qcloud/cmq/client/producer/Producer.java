@@ -1,14 +1,26 @@
 package com.qcloud.cmq.client.producer;
 
+import com.qcloud.cmq.client.client.CMQClientInterceptor;
 import com.qcloud.cmq.client.common.ClientConfig;
 import com.qcloud.cmq.client.exception.MQClientException;
 import com.qcloud.cmq.client.exception.MQServerException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Producer extends ClientConfig {
 
-    protected final ProducerImpl producer = new ProducerImpl(this);
+    private List<CMQClientInterceptor> interceptors;
+
+    protected final ProducerImpl producer = new ProducerImpl(this, interceptors);
+
+    public Producer() {
+        this.interceptors = new ArrayList<>();
+    }
+
+    public Producer(List<CMQClientInterceptor> interceptors) {
+        this.interceptors = interceptors;
+    }
 
     public void start() throws MQClientException {
         producer.start();
