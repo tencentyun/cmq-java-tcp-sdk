@@ -28,8 +28,7 @@ public class MQClientInstance {
 
 //    private final CMQClient cMQClient;
     private CMQClientInterceptor.Chain cMQClient;
-
-
+    
     private ServiceState serviceState = ServiceState.CREATE_JUST;
 
     MQClientInstance(ClientConfig clientConfig, int instanceIndex, String clientId,

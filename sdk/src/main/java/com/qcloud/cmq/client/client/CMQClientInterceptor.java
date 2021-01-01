@@ -45,6 +45,10 @@ public interface CMQClientInterceptor {
                                    final CommunicationMode communicationMode, final PublishCallback publishCallback,
                                    final int retryTimesWhenSendFailed, ProducerImpl producer, Chain chain)
             throws RemoteException, InterruptedException;
+    BatchPublishResult batchPublishIntercept(List<String> accessList, final Cmq.CMQProto request, final long timeoutMillis,
+                                           final CommunicationMode communicationMode, final BatchPublishCallback publishCallback,
+                                           final int retryTimesWhenSendFailed, ProducerImpl producer, Chain chain)
+            throws RemoteException, InterruptedException;
 
     interface Chain {
 
@@ -84,6 +88,11 @@ public interface CMQClientInterceptor {
         PublishResult publishMessage(List<String> accessList, final Cmq.CMQProto request, final long timeoutMillis,
                                      final CommunicationMode communicationMode, final PublishCallback publishCallback,
                                      final int retryTimesWhenSendFailed, ProducerImpl producer)
+                throws RemoteException, InterruptedException;
+
+        BatchPublishResult batchPublishMessage(List<String> accessList, final Cmq.CMQProto request, final long timeoutMillis,
+                                               final CommunicationMode communicationMode, final BatchPublishCallback publishCallback,
+                                               final int retryTimesWhenSendFailed, ProducerImpl producer)
                 throws RemoteException, InterruptedException;
     }
 
@@ -166,6 +175,15 @@ public interface CMQClientInterceptor {
                                             final int retryTimesWhenSendFailed, ProducerImpl producer)
                 throws RemoteException, InterruptedException {
             return new DefaultChain(cmqClient, interceptorList).publishMessage(accessList, request, timeoutMillis,
+                    communicationMode, publishCallback, retryTimesWhenSendFailed, producer);
+        }
+
+        @Override
+        public BatchPublishResult batchPublishMessage(List<String> accessList, final Cmq.CMQProto request, final long timeoutMillis,
+                                                      final CommunicationMode communicationMode, final BatchPublishCallback publishCallback,
+                                                      final int retryTimesWhenSendFailed, ProducerImpl producer)
+                throws RemoteException, InterruptedException {
+            return new DefaultChain(cmqClient, interceptorList).batchPublishMessage(accessList, request, timeoutMillis,
                     communicationMode, publishCallback, retryTimesWhenSendFailed, producer);
         }
     }
@@ -284,6 +302,20 @@ public interface CMQClientInterceptor {
                         communicationMode, publishCallback, retryTimesWhenSendFailed, producer);
             } else {
                 return interceptorList.get(index++).publishIntercept(accessList, request, timeoutMillis,
+                        communicationMode, publishCallback, retryTimesWhenSendFailed, producer, this); // 传this(调度器)用于回调
+            }
+        }
+
+        @Override
+        public BatchPublishResult batchPublishMessage(List<String> accessList, final Cmq.CMQProto request, final long timeoutMillis,
+                                            final CommunicationMode communicationMode, final BatchPublishCallback publishCallback,
+                                            final int retryTimesWhenSendFailed, ProducerImpl producer)
+                throws RemoteException, InterruptedException {
+            if (index == interceptorList.size()) {
+                return cmqClient.batchPublishMessage(accessList, request, timeoutMillis,
+                        communicationMode, publishCallback, retryTimesWhenSendFailed, producer);
+            } else {
+                return interceptorList.get(index++).batchPublishIntercept(accessList, request, timeoutMillis,
                         communicationMode, publishCallback, retryTimesWhenSendFailed, producer, this); // 传this(调度器)用于回调
             }
         }
