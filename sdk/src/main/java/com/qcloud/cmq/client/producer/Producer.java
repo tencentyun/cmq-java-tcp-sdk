@@ -12,14 +12,17 @@ public class Producer extends ClientConfig {
 
     private List<CMQClientInterceptor> interceptors;
 
-    protected final ProducerImpl producer = new ProducerImpl(this, interceptors);
+    protected final ProducerImpl producer;
 
     public Producer() {
         this.interceptors = new ArrayList<>();
+        this.producer = new ProducerImpl(this, interceptors);
+
     }
 
     public Producer(List<CMQClientInterceptor> interceptors) {
         this.interceptors = interceptors;
+        this.producer = new ProducerImpl(this, interceptors);
     }
 
     public void start() throws MQClientException {
