@@ -62,7 +62,7 @@ public class ConsumerImpl {
             case CREATE_JUST:
                 this.serviceState = ServiceState.START_FAILED;
                 this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.consumer,
-                        Arrays.asList());
+                        interceptors);
                 mQClientInstance.registerConsumer(this);
                 mQClientInstance.start();
                 logger.info("the consumer [{}] start OK", this.consumer);
