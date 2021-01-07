@@ -98,14 +98,9 @@ public class SubscribeService {
                             logger.info("pull message error :" + e.getMessage());
                         }
                     });
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             logger.error("pull message error", e);
-            this.consumer.setNeedUpdateRoute();
-        } catch (InterruptedException e) {
-            logger.error("pull message error", e);
-            this.consumer.setNeedUpdateRoute();
-        } catch (MQClientException e) {
-            logger.error("pull message error", e);
+            flightPullRequest.decrementAndGet();
             this.consumer.setNeedUpdateRoute();
         }
     }
