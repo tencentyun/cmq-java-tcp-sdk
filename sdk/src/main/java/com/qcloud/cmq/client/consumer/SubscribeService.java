@@ -11,6 +11,7 @@ import com.qcloud.cmq.client.netty.RemoteException;
 import com.qcloud.cmq.client.protocol.Cmq;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
@@ -51,12 +52,23 @@ public class SubscribeService {
             public void run() {
                 logger.debug("schedule flightPullRequest:{}, size:{}, active: {}",
                         flightPullRequest.get(), consumeRequestQueue.size(), consumeExecutor.getActiveCount());
-                if (flightPullRequest.get() < 16 && consumeRequestQueue.size() < 16) {
-                    flightPullRequest.incrementAndGet();
-                    SubscribeService.this.pullImmediately();
-                }
+                pullRequestImmediately();
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
+    }
+
+    private void pullRequestImmediately() {
+        if (flightPullRequest.get() < 16 && consumeRequestQueue.size() < 16) {
+            flightPullRequest.incrementAndGet();
+            try {
+                SubscribeService.this.pullImmediately();
+            }catch (RemoteException | InterruptedException | MQClientException e) {
+                logger.error("pull message error", e);
+                SubscribeService.this.consumer.setNeedUpdateRoute();
+            } finally {
+                flightPullRequest.decrementAndGet();
+            }
+        }
     }
 
     private void submitPullRequest() {
@@ -64,50 +76,33 @@ public class SubscribeService {
             @Override
             public void run() {
                 logger.debug("submit flightPullRequest:{}, size:{}", flightPullRequest.get(), consumeRequestQueue.size());
-                if (flightPullRequest.get() < 16 && consumeRequestQueue.size() < 16) {
-                    flightPullRequest.incrementAndGet();
-                    SubscribeService.this.pullImmediately();
-                }
+                pullRequestImmediately();
             }
         }, 0, TimeUnit.MILLISECONDS);
     }
 
-    private void pullImmediately() {
+    private void pullImmediately() throws RemoteException, InterruptedException, MQClientException {
         Cmq.CMQProto request = pullRequestBuilder.setSeqno(RequestIdHelper.getNextSeqNo()).build();
         int timeoutMS = this.consumer.getConsumer().getRequestTimeoutMS() + this.consumer.getConsumer().getPollingWaitSeconds() * 1000;
 
-        try {
-            List<String> accessList = consumer.getQueueRoute(this.queue);
-            this.consumer.getMQClientInstance().getCMQClient().batchReceiveMessage(accessList, request, timeoutMS,
-                    CommunicationMode.ASYNC, new BatchReceiveCallback() {
-                        @Override
-                        public void onSuccess(BatchReceiveResult receiveResult) {
-                            flightPullRequest.decrementAndGet();
 
-                            if (receiveResult.getReturnCode() == ResponseCode.SUCCESS) {
-                                consumeExecutor.submit(new ConsumeRequest(receiveResult.getMessageList()));
-                            }else if(receiveResult.getReturnCode() != ResponseCode.NO_NEW_MESSAGES){
-                                logger.info("pull message error:" + receiveResult.getErrorMessage() + ", errorCode:"
-                                            + receiveResult.getReturnCode());
-                            }
-                        }
-
-                        @Override
-                        public void onException(Throwable e) {
-                            flightPullRequest.decrementAndGet();
-                            logger.info("pull message error :" + e.getMessage());
-                        }
-                    });
-        } catch (RemoteException e) {
-            logger.error("pull message error", e);
-            this.consumer.setNeedUpdateRoute();
-        } catch (InterruptedException e) {
-            logger.error("pull message error", e);
-            this.consumer.setNeedUpdateRoute();
-        } catch (MQClientException e) {
-            logger.error("pull message error", e);
-            this.consumer.setNeedUpdateRoute();
-        }
+        List<String> accessList = consumer.getQueueRoute(this.queue);
+        this.consumer.getMQClientInstance().getCMQClient().batchReceiveMessage(accessList, request, timeoutMS,
+                CommunicationMode.ASYNC, new BatchReceiveCallback() {
+            @Override
+            public void onSuccess(BatchReceiveResult receiveResult) {
+                if (receiveResult.getReturnCode() == ResponseCode.SUCCESS) {
+                    consumeExecutor.submit(new ConsumeRequest(receiveResult.getMessageList()));
+                }else if(receiveResult.getReturnCode() != ResponseCode.NO_NEW_MESSAGES){
+                    logger.info("pull message error:" + receiveResult.getErrorMessage() + ", errorCode:"
+                            + receiveResult.getReturnCode());
+                }
+            }
+            @Override
+            public void onException(Throwable e) {
+                logger.info("pull message error :" + e.getMessage());
+            }
+        });
     }
 
     public void start() {
