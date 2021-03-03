@@ -1,6 +1,7 @@
 package com.qcloud.cmq.client.consumer;
 
 import com.google.protobuf.TextFormat;
+import com.qcloud.cmq.client.client.CMQClientInterceptor;
 import com.qcloud.cmq.client.common.ServiceState;
 import com.qcloud.cmq.client.client.MQClientManager;
 import com.qcloud.cmq.client.common.LogHelper;
@@ -14,6 +15,7 @@ import com.qcloud.cmq.client.netty.RemoteException;
 import com.qcloud.cmq.client.protocol.Cmq;
 import org.slf4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,11 +28,13 @@ public class ConsumerImpl {
     private final ConcurrentHashMap<String, List<String>> queueRouteTable = new ConcurrentHashMap<String, List<String>>();
     private final ConcurrentHashMap<String, SubscribeService> subscribeTable = new ConcurrentHashMap<String, SubscribeService>();
     private volatile ServiceState serviceState = ServiceState.CREATE_JUST;
+    private List<CMQClientInterceptor> interceptors;
 
     private volatile boolean needUpdateRoute = true;
 
-    ConsumerImpl(Consumer consumer) {
+    ConsumerImpl(Consumer consumer, List<CMQClientInterceptor> interceptors) {
         this.consumer = consumer;
+        this.interceptors = interceptors;
     }
 
     private void makeSureStateOK() throws MQClientException {
@@ -57,7 +61,8 @@ public class ConsumerImpl {
         switch (this.serviceState) {
             case CREATE_JUST:
                 this.serviceState = ServiceState.START_FAILED;
-                this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.consumer);
+                this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.consumer,
+                        interceptors);
                 mQClientInstance.registerConsumer(this);
                 mQClientInstance.start();
                 logger.info("the consumer [{}] start OK", this.consumer);

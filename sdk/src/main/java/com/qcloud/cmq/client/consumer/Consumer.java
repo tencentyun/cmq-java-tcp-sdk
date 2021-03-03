@@ -1,14 +1,29 @@
 package com.qcloud.cmq.client.consumer;
 
+import com.qcloud.cmq.client.client.CMQClientInterceptor;
 import com.qcloud.cmq.client.common.ClientConfig;
 import com.qcloud.cmq.client.exception.MQClientException;
 import com.qcloud.cmq.client.exception.MQServerException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Consumer extends ClientConfig {
 
-    private ConsumerImpl consumer = new ConsumerImpl(this);
+    private List<CMQClientInterceptor> interceptors;
+
+    private ConsumerImpl consumer;
+
+    public Consumer(List<CMQClientInterceptor> interceptors) {
+        this.interceptors = interceptors;
+        this.consumer = new ConsumerImpl(this, interceptors);
+    }
+
+    public Consumer() {
+        this.interceptors = new ArrayList<>();
+        this.consumer = new ConsumerImpl(this, interceptors);
+
+    }
 
     public void start() throws MQClientException {
         consumer.start();
