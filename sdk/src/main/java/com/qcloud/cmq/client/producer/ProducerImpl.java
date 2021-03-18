@@ -1,7 +1,6 @@
 package com.qcloud.cmq.client.producer;
 
 import com.google.protobuf.ByteString;
-import com.qcloud.cmq.client.client.CMQClientInterceptor;
 import com.qcloud.cmq.client.common.*;
 import com.qcloud.cmq.client.exception.MQClientException;
 import com.qcloud.cmq.client.exception.MQServerException;
@@ -21,16 +20,14 @@ public class ProducerImpl {
     private final Producer producer;
     private ServiceState serviceState = ServiceState.CREATE_JUST;
     private MQClientInstance mQClientInstance;
-    private List<CMQClientInterceptor> interceptors;
 
     private final String contentCharSet = "UTF-8";
 
     private ConcurrentHashMap<String, List<String>> topicRouteTable = new ConcurrentHashMap<String, List<String>>();
     private ConcurrentHashMap<String, List<String>> queueRouteTable = new ConcurrentHashMap<String, List<String>>();
 
-    ProducerImpl(final Producer producer, List<CMQClientInterceptor> interceptors) {
+    ProducerImpl(final Producer producer) {
         this.producer = producer;
-        this.interceptors = interceptors;
     }
 
     synchronized protected void start() throws MQClientException {
@@ -38,8 +35,7 @@ public class ProducerImpl {
             case CREATE_JUST:
                 this.serviceState = ServiceState.START_FAILED;
                 this.producer.changeInstanceNameToPID();
-                this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.producer,
-                        interceptors);
+                this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.producer);
                 mQClientInstance.registerProducer(this);
                 mQClientInstance.start();
                 logger.info("the producer [{}] start OK.", this.producer);
@@ -126,9 +122,9 @@ public class ProducerImpl {
                 return this.mQClientInstance.getCMQClient().sendMessage(accessList, request, timeout,
                         communicationMode, sendCallback, producer.getRetryTimesWhenSendFailed(), this);
             } catch (RemoteException e) {
-                logger.error("send msg error {}", e);
+                logger.error("send msg server error {}",e.getMessage(), e);
             } catch (InterruptedException e) {
-                logger.error("send msg error {}", e);
+                logger.error("send msg interrupted error {}",e.getMessage(), e);
             }
         }
         throw new MQServerException(ResponseCode.SEND_REQUEST_ERROR, String.format("Send Message Error %d times", timesTotal));
