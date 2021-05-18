@@ -126,9 +126,9 @@ public class ProducerImpl {
                 return this.mQClientInstance.getCMQClient().sendMessage(accessList, request, timeout,
                         communicationMode, sendCallback, producer.getRetryTimesWhenSendFailed(), this);
             } catch (RemoteException e) {
-                logger.error("send msg error {}", e);
+                logger.error("send msg server error {}",e.getMessage(), e);
             } catch (InterruptedException e) {
-                logger.error("send msg error {}", e);
+                logger.error("send msg interrupted error {}",e.getMessage(), e);
             }
         }
         throw new MQServerException(ResponseCode.SEND_REQUEST_ERROR, String.format("Send Message Error %d times", timesTotal));
