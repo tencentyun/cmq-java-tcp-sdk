@@ -2,18 +2,18 @@ package com.qcloud.cmq.client.producer;
 
 import com.google.protobuf.ByteString;
 import com.qcloud.cmq.client.client.CMQClientInterceptor;
+import com.qcloud.cmq.client.client.MQClientInstance;
+import com.qcloud.cmq.client.client.MQClientManager;
 import com.qcloud.cmq.client.common.*;
 import com.qcloud.cmq.client.exception.MQClientException;
 import com.qcloud.cmq.client.exception.MQServerException;
-import com.qcloud.cmq.client.client.MQClientInstance;
-import com.qcloud.cmq.client.client.MQClientManager;
 import com.qcloud.cmq.client.netty.CommunicationMode;
 import com.qcloud.cmq.client.netty.RemoteException;
 import com.qcloud.cmq.client.protocol.Cmq;
 import org.slf4j.Logger;
 
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ProducerImpl {
@@ -38,6 +38,7 @@ public class ProducerImpl {
             case CREATE_JUST:
                 this.serviceState = ServiceState.START_FAILED;
                 this.producer.changeInstanceNameToPID();
+                //this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.producer);
                 this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.producer,
                         interceptors);
                 mQClientInstance.registerProducer(this);
@@ -93,7 +94,7 @@ public class ProducerImpl {
     }
 
     private SendResult sendImpl(String queue, String msgBody, int delaySeconds, CommunicationMode communicationMode,
-                                SendCallback sendCallback, long timeout) throws MQClientException, MQServerException{
+                                SendCallback sendCallback, long timeout) throws MQClientException, MQServerException {
         return sendImpl(queue, msgBody, delaySeconds, communicationMode, sendCallback, timeout, false, 0);
     }
 
@@ -126,9 +127,9 @@ public class ProducerImpl {
                 return this.mQClientInstance.getCMQClient().sendMessage(accessList, request, timeout,
                         communicationMode, sendCallback, producer.getRetryTimesWhenSendFailed(), this);
             } catch (RemoteException e) {
-                logger.error("send msg error {}", e);
+                logger.error("send msg server error {}",e.getMessage(), e);
             } catch (InterruptedException e) {
-                logger.error("send msg error {}", e);
+                logger.error("send msg interrupted error {}",e.getMessage(), e);
             }
         }
         throw new MQServerException(ResponseCode.SEND_REQUEST_ERROR, String.format("Send Message Error %d times", timesTotal));
@@ -145,7 +146,7 @@ public class ProducerImpl {
     }
 
     BatchSendResult batchSendTransactionMsg(String queue, List<String> msgList, int delaySeconds, long timeout, int firstQuery)
-            throws MQClientException, MQServerException{
+            throws MQClientException, MQServerException {
         return this.batchSendImpl(queue, msgList, delaySeconds, CommunicationMode.SYNC, null, timeout, true, firstQuery);
     }
 
@@ -210,7 +211,7 @@ public class ProducerImpl {
     }
 
     private PublishResult publishImpl(String topic, String msgBody, String routeKey, List<String> tagList,
-                                   CommunicationMode communicationMode, PublishCallback callback, long timeout) throws MQClientException, MQServerException {
+                                      CommunicationMode communicationMode, PublishCallback callback, long timeout) throws MQClientException, MQServerException {
         this.makeSureStateOK();
 
         Cmq.cmq_tcp_publish_msg.Builder contentBuilder = Cmq.cmq_tcp_publish_msg.newBuilder()
@@ -259,7 +260,7 @@ public class ProducerImpl {
     }
 
     private BatchPublishResult batchPublishImpl(String topic, List<String> msgList, String routeKey, List<String> tagList,
-                                             CommunicationMode communicationMode, BatchPublishCallback callback, long timeout)
+                                                CommunicationMode communicationMode, BatchPublishCallback callback, long timeout)
             throws MQClientException, MQServerException {
         this.makeSureStateOK();
 
@@ -367,8 +368,8 @@ public class ProducerImpl {
     }
 
     public void sendConfirmMsgImpl(TransactionStatus transactionStatus,
-                               String queueName,
-                               SendResult sendResult, long timeout) throws MQServerException, MQClientException {
+                                   String queueName,
+                                   SendResult sendResult, long timeout) throws MQServerException, MQClientException {
         long transactionId = sendResult.getMsgId();
         Cmq.cmq_transaction_confirm_item.Builder itemBuilder = Cmq.cmq_transaction_confirm_item.newBuilder()
                 .setMsgId(transactionId);

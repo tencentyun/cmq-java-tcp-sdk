@@ -1,8 +1,8 @@
 package com.qcloud.cmq.client.netty;
 
 import com.google.protobuf.TextFormat;
-import com.qcloud.cmq.client.common.*;
 import com.qcloud.cmq.client.client.CMQClientHandler;
+import com.qcloud.cmq.client.common.*;
 import com.qcloud.cmq.client.protocol.Cmq;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -28,6 +28,7 @@ public class NettyClient {
     private static final Logger logger = LogHelper.getLog();
 
     private static final long LOCK_TIMEOUT_MILLIS = 3000;
+    private static final int CONNECTION_NOT_AUTHED = 306;
 
     private final NettyClientConfig nettyClientConfig;
     private final Bootstrap bootstrap = new Bootstrap();
@@ -138,6 +139,10 @@ public class NettyClient {
     }
 
     private void processResponseCommand(ChannelHandlerContext ctx, Cmq.CMQProto cmd) {
+        if (cmd.getResult() == CONNECTION_NOT_AUTHED) {
+            this.closeChannel(ctx.channel());
+            return;
+        }
         final long requestId = cmd.getSeqno();
         final ResponseFuture responseFuture = responseTable.get(requestId);
         if (responseFuture != null) {
@@ -368,7 +373,13 @@ public class NettyClient {
                 final Channel channel = cw.getChannel();
                 if (channel != null && channel.isActive()) {
                     try {
-                        return this.invokeSyncImpl(channel, request, timeoutMillis);
+                        Cmq.CMQProto cmqProto = this.invokeSyncImpl(channel, request, timeoutMillis);
+                        // tcp connection not authed
+                        if (cmqProto.getResult() == CONNECTION_NOT_AUTHED) {
+                            this.closeChannel(address, channel);
+                            logger.warn("invokeSync: close socket because of connection not authed, {}", address);
+                        }
+                        return cmqProto;
                     } catch (RemoteSendRequestException e) {
                         logger.warn("invokeSync: send request exception, so close the channel[{}]", address);
                         this.closeChannel(address, channel);
