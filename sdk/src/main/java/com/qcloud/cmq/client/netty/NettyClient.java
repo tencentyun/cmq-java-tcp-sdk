@@ -139,10 +139,6 @@ public class NettyClient {
     }
 
     private void processResponseCommand(ChannelHandlerContext ctx, Cmq.CMQProto cmd) {
-        if (cmd.getResult() == CONNECTION_NOT_AUTHED) {
-            this.closeChannel(ctx.channel());
-            return;
-        }
         final long requestId = cmd.getSeqno();
         final ResponseFuture responseFuture = responseTable.get(requestId);
         if (responseFuture != null) {
