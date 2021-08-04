@@ -34,7 +34,7 @@ public class CMQClientHandler {
         Cmq.cmq_transaction_confirm.Builder confirmBuilder = Cmq.cmq_transaction_confirm.newBuilder();
         Cmq.cmq_transaction_confirm_item.Builder confirmItemBuilder = Cmq.cmq_transaction_confirm_item.newBuilder();
 
-        Message message = new Message(query.getMsgId(), -1, null);
+        Message message = new Message(query.getMsgId(), -1, null, 0, 0, 0, 0);
         confirmItemBuilder.setMsgId(message.getMessageId());
         TransactionStatusChecker checker = TransactionProducer.getChecker(query.getQueueName());
         if(null == checker){
