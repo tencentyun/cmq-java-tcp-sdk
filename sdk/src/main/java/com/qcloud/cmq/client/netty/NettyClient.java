@@ -1,8 +1,8 @@
 package com.qcloud.cmq.client.netty;
 
 import com.google.protobuf.TextFormat;
-import com.qcloud.cmq.client.common.*;
 import com.qcloud.cmq.client.client.CMQClientHandler;
+import com.qcloud.cmq.client.common.*;
 import com.qcloud.cmq.client.protocol.Cmq;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -139,10 +139,6 @@ public class NettyClient {
     }
 
     private void processResponseCommand(ChannelHandlerContext ctx, Cmq.CMQProto cmd) {
-        if (cmd.getResult() == CONNECTION_NOT_AUTHED) {
-            this.closeChannel(ctx.channel());
-            return;
-        }
         final long requestId = cmd.getSeqno();
         final ResponseFuture responseFuture = responseTable.get(requestId);
         if (responseFuture != null) {
@@ -153,9 +149,15 @@ public class NettyClient {
             responseFuture.release();
             responseTable.remove(requestId);
             if (responseFuture.getInvokeCallback() != null) {
+                // 异步处理
                 executeInvokeCallback(responseFuture);
             } else {
+                // 同步处理
                 responseFuture.putResponse(cmd);
+            }
+            if (cmd.getResult() == CONNECTION_NOT_AUTHED) {
+                this.closeChannel(ctx.channel());
+                return;
             }
         } else {
             logger.warn("receive response, but not matched any request, " + RemoteHelper.parseChannelRemoteAddr(ctx.channel()));
