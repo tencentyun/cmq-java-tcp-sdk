@@ -12,7 +12,7 @@ CMQ tcp协议的java sdk
 <dependency>
     <groupId>com.qcloud</groupId>
     <artifactId>cmq-tcp-client</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.4</version>
 </dependency>
 ```
 
