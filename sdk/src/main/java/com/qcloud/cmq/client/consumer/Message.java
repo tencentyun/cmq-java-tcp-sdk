@@ -2,13 +2,13 @@ package com.qcloud.cmq.client.consumer;
 
 public class Message {
 
-    public long msgId;
-    public long receiptHandle;
-    public String data;
-    public long enqueueTime;
-    public long nextVisibleTime;
-    public long firstDequeueTime;
-    public long dequeueCount;
+    private long msgId;
+    private long receiptHandle;
+    private String data;
+    private long enqueueTime;
+    private long nextVisibleTime;
+    private long firstDequeueTime;
+    private long dequeueCount;
 
     public Message() {
     }
