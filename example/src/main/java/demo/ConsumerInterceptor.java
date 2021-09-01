@@ -1,6 +1,5 @@
 package demo;
 
-import com.qcloud.cmq.client.client.CMQClientInterceptor;
 import com.qcloud.cmq.client.common.ClientConfig;
 import com.qcloud.cmq.client.consumer.*;
 import com.qcloud.cmq.client.exception.MQClientException;

@@ -120,7 +120,7 @@
             </dependency>
 			<dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>cmq-example</artifactId>
+                <artifactId>example</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
