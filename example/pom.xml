@@ -20,7 +20,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>cmq-tcp-client</artifactId>
-            <version>${project.version}</version>
         </dependency>
 		
         <dependency>
@@ -28,6 +27,7 @@
             <artifactId>commons-cli</artifactId>
             <version>1.2</version>
         </dependency>
+
     </dependencies>
 
 </project>
