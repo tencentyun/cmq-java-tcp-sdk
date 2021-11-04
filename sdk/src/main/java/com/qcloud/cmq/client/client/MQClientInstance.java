@@ -128,44 +128,48 @@ public class MQClientInstance {
     public void updateQueueRoute(String queue, final ConcurrentHashMap<String, List<String>> routeTable) throws MQClientException {
         try {
             if (this.lockNameServer.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
-                for (NameServerClient client: this.nameServerTable.values()) {
-                    try {
-                        List<String> result = client.fetchQueueRoute(queue);
-                        routeTable.put(queue, result);
-                        break;
-                    } catch (MQServerException e) {
-                        logger.error("updateQueueRoute with Exception", e);
+                try {
+                    for (NameServerClient client : this.nameServerTable.values()) {
+                        try {
+                            List<String> result = client.fetchQueueRoute(queue);
+                            routeTable.put(queue, result);
+                            break;
+                        } catch (MQServerException e) {
+                            logger.error("updateQueueRoute with Exception", e);
+                        }
                     }
+                } finally {
+                    this.lockNameServer.unlock();
                 }
             } else {
                 logger.warn("updateQueueRoute tryLock timeout {}ms", LOCK_TIMEOUT_MILLIS);
             }
         } catch (InterruptedException e) {
             logger.warn("updateQueueRoute Exception", e);
-        } finally {
-            this.lockNameServer.unlock();
         }
     }
 
     public void updateTopicRoute(String topic, final ConcurrentHashMap<String, List<String>> routeTable) throws MQClientException {
         try {
             if (this.lockNameServer.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
-                for (NameServerClient client: this.nameServerTable.values()) {
-                    try {
-                        List<String> result = client.fetchTopicRoute(topic);
-                        routeTable.put(topic, result);
-                        break;
-                    } catch (MQServerException e) {
-                        logger.error("updateTopicRoute with Exception", e);
+                try {
+                    for (NameServerClient client : this.nameServerTable.values()) {
+                        try {
+                            List<String> result = client.fetchTopicRoute(topic);
+                            routeTable.put(topic, result);
+                            break;
+                        } catch (MQServerException e) {
+                            logger.error("updateTopicRoute with Exception", e);
+                        }
                     }
+                } finally {
+                    this.lockNameServer.unlock();
                 }
             } else {
                 logger.warn("updateTopicRoute tryLock timeout {}ms", LOCK_TIMEOUT_MILLIS);
             }
         } catch (InterruptedException e) {
             logger.warn("updateTopicRoute Exception", e);
-        } finally {
-            this.lockNameServer.unlock();
         }
     }
 
