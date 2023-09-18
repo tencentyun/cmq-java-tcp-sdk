@@ -11,7 +11,6 @@ import com.qcloud.cmq.client.netty.RemoteException;
 import com.qcloud.cmq.client.protocol.Cmq;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
@@ -27,22 +26,26 @@ public class SubscribeService {
 
     private final BlockingQueue<Runnable> consumeRequestQueue;
     private final ThreadPoolExecutor consumeExecutor;
-    private final ScheduledExecutorService scheduledExecutorService = Executors
-            .newSingleThreadScheduledExecutor(new ThreadFactory() {
-                @Override
-                public Thread newThread(Runnable r) {
-                    return new Thread(r, "PullMessageScheduledThread");
-                }
-            });
+    private final ScheduledExecutorService scheduledExecutorService;
     private AtomicInteger flightPullRequest = new AtomicInteger();
 
-    SubscribeService(String queue, MessageListener listener, Cmq.CMQProto.Builder builder, ConsumerImpl consumer) {
+    SubscribeService(String queue, MessageListener listener, Cmq.CMQProto.Builder builder, ConsumerImpl consumer,
+                     int pullMessageThreadCorePoolSize, int consumeMessageThreadCorePoolSize, int consumeMessageThreadMaxPoolSize) {
         this.queue = queue;
         this.listener = listener;
         this.pullRequestBuilder = builder;
         this.consumer = consumer;
+
+        this.scheduledExecutorService = Executors.newScheduledThreadPool(pullMessageThreadCorePoolSize, new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "PullMessageScheduledThread");
+            }
+        });
+
         this.consumeRequestQueue = new LinkedBlockingQueue<Runnable>();
-        this.consumeExecutor = new ThreadPoolExecutor(1, 1, 1000 * 60, TimeUnit.MILLISECONDS,
+        this.consumeExecutor = new ThreadPoolExecutor(consumeMessageThreadCorePoolSize, consumeMessageThreadMaxPoolSize,
+                1000 * 60, TimeUnit.MILLISECONDS,
                 this.consumeRequestQueue, new ThreadGroupFactory("ConsumeMessageThread_"));
     }
 
@@ -62,7 +65,7 @@ public class SubscribeService {
             flightPullRequest.incrementAndGet();
             try {
                 SubscribeService.this.pullImmediately();
-            }catch (RemoteException | InterruptedException | MQClientException e) {
+            } catch (Throwable e) {
                 logger.error("pull message error", e);
                 SubscribeService.this.consumer.setNeedUpdateRoute();
             } finally {
@@ -89,20 +92,21 @@ public class SubscribeService {
         List<String> accessList = consumer.getQueueRoute(this.queue);
         this.consumer.getMQClientInstance().getCMQClient().batchReceiveMessage(accessList, request, timeoutMS,
                 CommunicationMode.ASYNC, new BatchReceiveCallback() {
-            @Override
-            public void onSuccess(BatchReceiveResult receiveResult) {
-                if (receiveResult.getReturnCode() == ResponseCode.SUCCESS) {
-                    consumeExecutor.submit(new ConsumeRequest(receiveResult.getMessageList()));
-                }else if(receiveResult.getReturnCode() != ResponseCode.NO_NEW_MESSAGES){
-                    logger.info("pull message error:" + receiveResult.getErrorMessage() + ", errorCode:"
-                            + receiveResult.getReturnCode());
-                }
-            }
-            @Override
-            public void onException(Throwable e) {
-                logger.info("pull message error :" + e.getMessage());
-            }
-        });
+                    @Override
+                    public void onSuccess(BatchReceiveResult receiveResult) {
+                        if (receiveResult.getReturnCode() == ResponseCode.SUCCESS) {
+                            consumeExecutor.submit(new ConsumeRequest(receiveResult.getMessageList()));
+                        } else if (receiveResult.getReturnCode() != ResponseCode.NO_NEW_MESSAGES) {
+                            logger.info("pull message error:" + receiveResult.getErrorMessage() + ", errorCode:"
+                                    + receiveResult.getReturnCode());
+                        }
+                    }
+
+                    @Override
+                    public void onException(Throwable e) {
+                        logger.info("pull message error :" + e.getMessage());
+                    }
+                });
     }
 
     public void start() {

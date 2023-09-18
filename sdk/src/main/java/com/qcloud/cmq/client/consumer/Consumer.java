@@ -86,7 +86,8 @@ public class Consumer extends ClientConfig {
     }
 
     public void subscribe(String queue, MessageListener listener) throws MQClientException, MQServerException {
-        this.consumer.subscriber(queue, listener);
+        this.consumer.subscriber(queue, listener, this.getPullMessageThreadCorePoolSize(), this.getConsumeMessageThreadCorePoolSize(),
+                this.getConsumeMessageThreadMaxPoolSize());
     }
 
     public void unSubscribe(String queue) throws MQClientException {

@@ -1,18 +1,23 @@
 package com.qcloud.cmq.client.client;
 
+import com.qcloud.cmq.client.common.ClientConfig;
+import com.qcloud.cmq.client.common.LogHelper;
+import com.qcloud.cmq.client.common.NettyClientConfig;
+import com.qcloud.cmq.client.common.ResponseCode;
 import com.qcloud.cmq.client.common.ServiceState;
-import com.qcloud.cmq.client.common.*;
 import com.qcloud.cmq.client.consumer.ConsumerImpl;
 import com.qcloud.cmq.client.exception.MQClientException;
 import com.qcloud.cmq.client.exception.MQServerException;
 import com.qcloud.cmq.client.producer.ProducerImpl;
 import io.netty.util.internal.ConcurrentSet;
-import org.slf4j.Logger;
-
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.slf4j.Logger;
 
 public class MQClientInstance {
     private final static long LOCK_TIMEOUT_MILLIS = 3000;
@@ -28,7 +33,7 @@ public class MQClientInstance {
 
 //    private final CMQClient cMQClient;
     private CMQClientInterceptor.Chain cMQClient;
-    
+
     private ServiceState serviceState = ServiceState.CREATE_JUST;
 
     MQClientInstance(ClientConfig clientConfig, int instanceIndex, String clientId,
@@ -123,16 +128,19 @@ public class MQClientInstance {
     public void updateQueueRoute(String queue, final ConcurrentHashMap<String, List<String>> routeTable) throws MQClientException {
         try {
             if (this.lockNameServer.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
-                for (NameServerClient client: this.nameServerTable.values()) {
-                    try {
-                        List<String> result = client.fetchQueueRoute(queue);
-                        routeTable.put(queue, result);
-                        break;
-                    } catch (MQServerException e) {
-                        logger.error("updateQueueRoute with Exception", e);
+                try {
+                    for (NameServerClient client : this.nameServerTable.values()) {
+                        try {
+                            List<String> result = client.fetchQueueRoute(queue);
+                            routeTable.put(queue, result);
+                            break;
+                        } catch (MQServerException e) {
+                            logger.error("updateQueueRoute with Exception", e);
+                        }
                     }
+                } finally {
+                    this.lockNameServer.unlock();
                 }
-                this.lockNameServer.unlock();
             } else {
                 logger.warn("updateQueueRoute tryLock timeout {}ms", LOCK_TIMEOUT_MILLIS);
             }
@@ -144,16 +152,19 @@ public class MQClientInstance {
     public void updateTopicRoute(String topic, final ConcurrentHashMap<String, List<String>> routeTable) throws MQClientException {
         try {
             if (this.lockNameServer.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
-                for (NameServerClient client: this.nameServerTable.values()) {
-                    try {
-                        List<String> result = client.fetchTopicRoute(topic);
-                        routeTable.put(topic, result);
-                        break;
-                    } catch (MQServerException e) {
-                        logger.error("updateTopicRoute with Exception", e);
+                try {
+                    for (NameServerClient client : this.nameServerTable.values()) {
+                        try {
+                            List<String> result = client.fetchTopicRoute(topic);
+                            routeTable.put(topic, result);
+                            break;
+                        } catch (MQServerException e) {
+                            logger.error("updateTopicRoute with Exception", e);
+                        }
                     }
+                } finally {
+                    this.lockNameServer.unlock();
                 }
-                this.lockNameServer.unlock();
             } else {
                 logger.warn("updateTopicRoute tryLock timeout {}ms", LOCK_TIMEOUT_MILLIS);
             }

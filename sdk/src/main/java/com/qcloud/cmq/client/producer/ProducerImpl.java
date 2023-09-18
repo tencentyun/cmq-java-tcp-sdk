@@ -37,8 +37,6 @@ public class ProducerImpl {
         switch (this.serviceState) {
             case CREATE_JUST:
                 this.serviceState = ServiceState.START_FAILED;
-                this.producer.changeInstanceNameToPID();
-                //this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.producer);
                 this.mQClientInstance = MQClientManager.getInstance().getAndCreateMQClientInstance(this.producer,
                         interceptors);
                 mQClientInstance.registerProducer(this);
