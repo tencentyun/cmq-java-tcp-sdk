@@ -7,7 +7,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <skip.assembly>true</skip.assembly>
-		<maven.test.skip>true</maven.test.skip>
+        <maven.test.skip>true</maven.test.skip>
     </properties>
 
     <modules>
@@ -15,101 +15,99 @@
         <module>example</module>
     </modules>
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
-	<groupId>com.qcloud</groupId>
+    <groupId>com.qcloud</groupId>
     <artifactId>cmq-sdk</artifactId>
     <version>1.1.8</version>
     <name>cmq tcp sdk</name>
-	<description>Tencent Cloud Message Queue java tcp SDK </description>
-	<url>https://github.com/tencentyun/cmq-java-tcp-sdk</url>
-	
-	<licenses>
+    <description>Tencent Cloud Message Queue java tcp SDK</description>
+    <url>https://github.com/tencentyun/cmq-java-tcp-sdk</url>
+
+    <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-	
-	<developers>
+
+    <developers>
         <developer>
             <name>trezhang</name>
             <email>trezhang@tencent.com</email>
         </developer>
     </developers>
-	
-	<scm>
+
+    <scm>
         <connection>scm:git@github.com:tencentyun/cmq-java-tcp-sdk.git</connection>
         <developerConnection>scm:git@github.com:tencentyun/cmq-java-tcp-sdk.git</developerConnection>
         <url>https://github.com/tencentyun/cmq-java-tcp-sdk</url>
     </scm>
 
-	<build>
-		<pluginManagement>
-		<plugins>
-			<!-- Source -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.2.1</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Javadoc -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-					<additionalparam>-Xdoclint:none</additionalparam><!-- 添加这个压制JavaDoc检查 -->
-				</configuration>
-				<executions>
-					<execution>
-					<phase>package</phase>
-					<goals>
-						<goal>jar</goal>
-					</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- GPG mvn clean deploy -P release -Dgpg.passphrase=YourPassphase -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-					<!-- <id>sign-artifacts</id> -->
-					<phase>verify</phase>
-					<goals>
-						<goal>sign</goal>
-					</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		</pluginManagement>
+    <build>
+        <plugins>
+            <!-- Source -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <additionalparam>-Xdoclint:none</additionalparam><!-- 添加这个压制JavaDoc检查 -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- GPG mvn clean deploy -P release -Dgpg.passphrase=YourPassphase -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <!-- <id>sign-artifacts</id> -->
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
-	
-	<distributionManagement>
-		<snapshotRepository>
-			<id>qcloud-releases</id>
-			<name>OSS Snapshots Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</snapshotRepository>
-		
-		<repository>
-			<id>qcloud-releases</id>
-			<name>OSS Staging Repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>qcloud-snapshots</id>
+            <name>OSS Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+
+        <repository>
+            <id>qcloud-releases</id>
+            <name>OSS Staging Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>
@@ -120,5 +118,5 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-	
+
 </project>
