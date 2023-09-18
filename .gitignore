@@ -6,4 +6,6 @@
 *.iws
 .DS_Store
 out
+example/target/
+sdk/target/
 

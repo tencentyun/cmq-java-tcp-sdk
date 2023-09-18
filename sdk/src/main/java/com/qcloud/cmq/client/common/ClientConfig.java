@@ -33,6 +33,10 @@ public class ClientConfig {
     private int pollingWaitSeconds = 10;
     private int batchPullNumber = 16;
 
+    private int pullMessageThreadCorePoolSize = 1;
+    private int consumeMessageThreadCorePoolSize = 1;
+    private int consumeMessageThreadMaxPoolSize = 1;
+
     public String buildMQClientId() {
         return this.getClientIP() + "@" + this.getInstanceName();
     }
@@ -145,13 +149,40 @@ public class ClientConfig {
         this.batchPullNumber = batchPullNumber;
     }
 
+    public int getPullMessageThreadCorePoolSize() {
+        return pullMessageThreadCorePoolSize;
+    }
+
+    public void setPullMessageThreadCorePoolSize(int pullMessageThreadCorePoolSize) {
+        this.pullMessageThreadCorePoolSize = pullMessageThreadCorePoolSize;
+    }
+
+    public int getConsumeMessageThreadCorePoolSize() {
+        return consumeMessageThreadCorePoolSize;
+    }
+
+    public void setConsumeMessageThreadCorePoolSize(int consumeMessageThreadCorePoolSize) {
+        this.consumeMessageThreadCorePoolSize = consumeMessageThreadCorePoolSize;
+    }
+
+    public int getConsumeMessageThreadMaxPoolSize() {
+        return consumeMessageThreadMaxPoolSize;
+    }
+
+    public void setConsumeMessageThreadMaxPoolSize(int consumeMessageThreadMaxPoolSize) {
+        this.consumeMessageThreadMaxPoolSize = consumeMessageThreadMaxPoolSize;
+    }
+
     @Override
     public String toString() {
         return "ClientConfig[nameServerAddress=" + nameServerAddress + ", clientIP=" + clientIP + ", instanceName=" + instanceName
                 + ", clientCallbackExecutorThreads=" + clientCallbackExecutorThreads + ", secretId=" + secretId
-                + ", secretKey=" + secretKey + ", signMethod=" + (signMethod == null? SIGN_METHOD_SHA1: signMethod)
+                + ", secretKey=" + secretKey + ", signMethod=" + (signMethod == null ? SIGN_METHOD_SHA1 : signMethod)
                 + ", requestTimeoutMS=" + requestTimeoutMS + ", retryTimesWhenSendFailed=" + retryTimesWhenSendFailed
-                + ", pollingWaitSeconds=" + pollingWaitSeconds + ", batchPullNumber=" + batchPullNumber + "]";
+                + ", pollingWaitSeconds=" + pollingWaitSeconds + ", batchPullNumber=" + batchPullNumber
+                + ", pullMessageThreadCorePoolSize=" + pullMessageThreadCorePoolSize
+                + ", consumeMessageThreadCorePoolSize=" + consumeMessageThreadCorePoolSize
+                + ", consumeMessageThreadMaxPoolSize=" + consumeMessageThreadMaxPoolSize + "]";
     }
 
     private static int getPid() {

@@ -30,9 +30,9 @@ CMQ tcp协议的java sdk
  - 获取master代码：
  
     `git clone https://github.com/tencentyun/cmq-java-tcp-sdk.git`
- - 获取指定tag代码，如v1.1.1：
+ - 获取指定tag代码，如v1.1.8：
  
-    `git clone --branch v1.1.1 https://github.com/tencentyun/cmq-java-tcp-sdk.git`
+    `git clone --branch v1.1.8 https://github.com/tencentyun/cmq-java-tcp-sdk.git`
 
 # 特性说明
 包含所有数据流特性。数据流包括消息相关的能力，如：收发消息、删除消息、事务消息等等。

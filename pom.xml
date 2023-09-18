@@ -19,7 +19,7 @@
     <packaging>pom</packaging>
 	<groupId>com.qcloud</groupId>
     <artifactId>cmq-sdk</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.8</version>
     <name>cmq tcp sdk</name>
 	<description>Tencent Cloud Message Queue java tcp SDK </description>
 	<url>https://github.com/tencentyun/cmq-java-tcp-sdk</url>
@@ -43,7 +43,7 @@
         <developerConnection>scm:git@github.com:tencentyun/cmq-java-tcp-sdk.git</developerConnection>
         <url>https://github.com/tencentyun/cmq-java-tcp-sdk</url>
     </scm>
-	
+
 	<build>
 		<pluginManagement>
 		<plugins>
@@ -114,13 +114,8 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>com.qcloud</groupId>
                 <artifactId>cmq-tcp-client</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-			<dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>example</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

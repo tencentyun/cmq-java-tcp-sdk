@@ -15,7 +15,6 @@ import com.qcloud.cmq.client.netty.RemoteException;
 import com.qcloud.cmq.client.protocol.Cmq;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConsumerImpl {
 
     private final Logger logger = LogHelper.getLog();
-    private  MQClientInstance mQClientInstance;
+    private MQClientInstance mQClientInstance;
     private final Consumer consumer;
     private final ConcurrentHashMap<String, List<String>> queueRouteTable = new ConcurrentHashMap<String, List<String>>();
     private final ConcurrentHashMap<String, SubscribeService> subscribeTable = new ConcurrentHashMap<String, SubscribeService>();
@@ -251,7 +250,8 @@ public class ConsumerImpl {
         }
     }
 
-    void subscriber(String queue, MessageListener listener) throws MQClientException, MQServerException {
+    void subscriber(String queue, MessageListener listener, int pullMessageThreadCorePoolSize,
+                    int consumeMessageThreadCorePoolSize, int consumeMessageThreadMaxPoolSize) throws MQClientException, MQServerException {
         this.makeSureStateOK();
 
         Cmq.cmq_tcp_batch_pull_msg_req.Builder contentBuilder = Cmq.cmq_tcp_batch_pull_msg_req.newBuilder()
@@ -262,7 +262,8 @@ public class ConsumerImpl {
                 .setCmd(Cmq.CMQ_CMD.CMQ_TCP_BATCH_PULL_MSG_VALUE)
                 .setSeqno(RequestIdHelper.getNextSeqNo())
                 .setTcpBatchPullMsg(contentBuilder);
-        SubscribeService pullMessageService = new SubscribeService(queue, listener, builder,this);
+        SubscribeService pullMessageService = new SubscribeService(queue, listener, builder, this, pullMessageThreadCorePoolSize,
+                consumeMessageThreadCorePoolSize, consumeMessageThreadMaxPoolSize);
         if (subscribeTable.putIfAbsent(queue, pullMessageService) == null) {
             pullMessageService.start();
         } else {
@@ -282,7 +283,7 @@ public class ConsumerImpl {
     }
 
     MQClientInstance getMQClientInstance() {
-        return  mQClientInstance;
+        return mQClientInstance;
     }
 
     Consumer getConsumer() {
