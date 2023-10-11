@@ -149,10 +149,10 @@ public class NettyClient {
             responseFuture.release();
             responseTable.remove(requestId);
             if (responseFuture.getInvokeCallback() != null) {
-                // 异步处理
+                // Asynchronous processing
                 executeInvokeCallback(responseFuture);
             } else {
-                // 同步处理
+                // Synchronous processing
                 responseFuture.putResponse(cmd);
             }
             if (cmd.getResult() == CONNECTION_NOT_AUTHED) {
