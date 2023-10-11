@@ -1,16 +1,26 @@
 package com.qcloud.cmq.client.consumer;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 public class Message {
+
     private long msgId;
     private long receiptHandle;
     private String data;
+    private long enqueueTime;
+    private long nextVisibleTime;
+    private long firstDequeueTime;
+    private long dequeueCount;
 
-    public Message(long msgId, long receiptHandle, String data) {
+    public Message() {
+    }
+
+    public Message(long msgId, long receiptHandle, String data, long enqueueTime, long nextVisibleTime, long firstDequeueTime, long dequeueCount) {
         this.msgId = msgId;
         this.receiptHandle = receiptHandle;
         this.data = data;
+        this.enqueueTime = enqueueTime;
+        this.nextVisibleTime = nextVisibleTime;
+        this.firstDequeueTime = firstDequeueTime;
+        this.dequeueCount = dequeueCount;
     }
 
     public long getMessageId() {
@@ -25,7 +35,32 @@ public class Message {
         return data;
     }
 
+    public long getEnqueueTime() {
+        return enqueueTime;
+    }
+
+    public long getNextVisibleTime() {
+        return nextVisibleTime;
+    }
+
+    public long getFirstDequeueTime() {
+        return firstDequeueTime;
+    }
+
+    public long getDequeueCount() {
+        return dequeueCount;
+    }
+
+    @Override
     public String toString() {
-        return "[msgId=" + msgId + ", receiptHandle=" + receiptHandle+ ", data=" + data +"]";
+        return "Message{" +
+                "msgId=" + msgId +
+                ", receiptHandle=" + receiptHandle +
+                ", data='" + data + '\'' +
+                ", enqueueTime=" + enqueueTime +
+                ", nextVisibleTime=" + nextVisibleTime +
+                ", firstDequeueTime=" + firstDequeueTime +
+                ", dequeueCount=" + dequeueCount +
+                '}';
     }
 }
