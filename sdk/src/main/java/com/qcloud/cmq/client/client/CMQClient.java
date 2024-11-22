@@ -459,7 +459,10 @@ public class CMQClient {
 
     private ReceiveResult processReceiveResponse(final Cmq.CMQProto response) {
         Cmq.cmq_pull_msg_rsp responseContent = response.getPullRsp();
-        Message message = new Message(responseContent.getMsgId(), responseContent.getReceiptHandle(), responseContent.getMsgBody().toStringUtf8());
+        Message message = new Message(responseContent.getMsgId(), responseContent.getReceiptHandle()
+                , responseContent.getMsgBody().toStringUtf8(), responseContent.getEnqueueTime()
+                , responseContent.getNextVisibleTime(), responseContent.getFirstDequeueTime()
+                , responseContent.getDequeueCount());
         return new ReceiveResult(response.getResult(), response.getSeqno(), response.getError(), message);
     }
 
@@ -515,7 +518,8 @@ public class CMQClient {
         Cmq.cmq_batch_pull_msg_rsp responseContent = response.getBatchPullRsp();
         List<Message> messageList = new ArrayList<Message>();
         for (Cmq.cmq_pull_msg_rsp rsp : responseContent.getMsgListList()) {
-            messageList.add(new Message(rsp.getMsgId(), rsp.getReceiptHandle(), rsp.getMsgBody().toStringUtf8()));
+            messageList.add(new Message(rsp.getMsgId(), rsp.getReceiptHandle(), rsp.getMsgBody().toStringUtf8()
+                    , rsp.getEnqueueTime(), rsp.getNextVisibleTime(), rsp.getFirstDequeueTime(), rsp.getDequeueCount()));
         }
         return new BatchReceiveResult(response.getResult(), response.getSeqno(), response.getError(), messageList);
     }
